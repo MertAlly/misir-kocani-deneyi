@@ -118,6 +118,18 @@ body {
 .slide.active .project-meta { animation: fadeUp 0.45s ease both 0.38s; }
 .slide.active .step-badge { animation: fadeUp 0.35s ease both 0s; }
 .slide.active .scene-svg { animation: fadeUp 0.5s ease both 0.1s; }
+  /* 8. Sayfadaki yazı kesilmesini kökten çözen kod */
+#slide-8 div, .slide:nth-child(8) div {
+    height: auto !important; 
+    overflow: visible !important; 
+    display: block !important;
+    padding-bottom: 30px !important;
+}
+
+#slide-8 p, .slide:nth-child(8) p {
+    margin-bottom: 10px !important;
+    display: block !important;
+}
 </style>
 </head>
 <body>
