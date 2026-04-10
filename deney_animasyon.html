@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#06101f">
+<title>Mısır Koçanı — Krom Giderimi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #06101f;
+  --surface: rgba(255,255,255,0.055);
+  --surface2: rgba(255,255,255,0.09);
+  --border: rgba(255,255,255,0.1);
+  --text: #ddeefa;
+  --muted: rgba(210,235,255,0.5);
+  --teal: #1de9c0;
+  --teal-dim: rgba(29,233,192,0.13);
+  --amber: #f5a623;
+  --amber-dim: rgba(245,166,35,0.13);
+  --display: 'Cormorant Garamond', serif;
+  --body: 'DM Sans', sans-serif;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+html { height: 100%; height: 100dvh; background: var(--bg); overflow: hidden; }
+body {
+  width: 100%; height: 100%; height: 100dvh;
+  background: var(--bg); color: var(--text);
+  font-family: var(--body); overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+.bg-glow { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.bg-glow::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 10%, rgba(29,233,192,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 55% at 15% 85%, rgba(245,166,35,0.05) 0%, transparent 65%);
+}
+.grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+#prog-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 20; height: 2px; background: rgba(255,255,255,0.07); }
+#prog-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width 0.4s cubic-bezier(.4,0,.2,1); width: 0%; }
+#top-bar {
+  position: fixed; top: calc(2px + var(--safe-t)); left: 0; right: 0;
+  z-index: 19; height: 44px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+}
+#top-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+#top-count { font-size: 11px; color: var(--muted); }
+#stage { position: fixed; inset: 0; z-index: 1; }
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: calc(54px + var(--safe-t)) 24px calc(88px + var(--safe-b));
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.48s cubic-bezier(.4,0,.2,1), transform 0.48s cubic-bezier(.4,0,.2,1);
+  transform: translateX(36px);
+  will-change: transform, opacity; 
+  overflow-y: auto; /* Küçük ekranlarda kesilmeyi önler */
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox için scroll gizleme */
+}
+.slide::-webkit-scrollbar { display: none; /* Chrome/Safari için scroll gizleme */ }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.exit-left { opacity: 0; transform: translateX(-36px); }
+.slide.exit-right { opacity: 0; transform: translateX(36px); }
+.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.13em; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
+.display-title { font-family: var(--display); font-size: clamp(30px, 8vw, 52px); font-weight: 600; line-height: 1.12; text-align: center; color: var(--text); margin-bottom: 14px; }
+.display-title em { font-style: italic; color: var(--teal); }
+.body-text { font-size: clamp(13px, 3.5vw, 15px); font-weight: 300; line-height: 1.75; color: var(--muted); text-align: center; max-width: 480px; }
+.body-text strong { color: var(--text); font-weight: 500; }
+.card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px 18px; margin-top: 16px; width: 100%; max-width: 440px; }
+.card-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); font-weight: 500; margin-bottom: 7px; }
+.card-content { font-size: clamp(12px, 3vw, 14px); color: rgba(210,235,255,0.72); font-weight: 300; line-height: 1.65; }
+.step-badge { width: 46px; height: 46px; border-radius: 50%; background: var(--teal-dim); border: 1px solid rgba(29,233,192,0.28); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 22px; font-weight: 700; color: var(--teal); margin-bottom: 14px; flex-shrink: 0; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 16px; width: 100%; max-width: 360px; }
+.stat-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 11px 14px; }
+.stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.stat-value { font-size: clamp(17px, 4vw, 20px); font-weight: 500; color: var(--text); }
+.stat-unit { font-size: 12px; color: var(--muted); font-weight: 300; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
+.tag { background: var(--teal-dim); border: 0.5px solid rgba(29,233,192,0.22); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: var(--teal); font-weight: 400; }
+.tag.amber { background: var(--amber-dim); border-color: rgba(245,166,35,0.22); color: var(--amber); }
+.project-meta { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+.meta-pill { font-size: 11px; padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 0.5px solid var(--border); color: var(--muted); }
+#bottom-nav { position: fixed; bottom: calc(20px + var(--safe-b)); left: 0; right: 0; z-index: 20; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 0 24px; }
+.nav-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--surface2); border: 0.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: 22px; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s, color 0.2s; flex-shrink: 0; }
+.nav-btn:active { background: rgba(255,255,255,0.16); color: var(--text); }
+#dots-wrap { display: flex; gap: 6px; align-items: center; }
+.dot { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.22); transition: all 0.3s ease; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.dot.active { background: var(--teal); width: 22px; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.42} }
+@keyframes floatUp { 0%{transform:translateY(0);opacity:0.5} 80%{opacity:0.8} 100%{transform:translateY(-30px);opacity:0} }
+@keyframes waveX { 0%,100%{transform:translateX(0)} 50%{transform:translateX(-4px)} }
+@keyframes drip { 0%{transform:translateY(-8px);opacity:0} 15%{opacity:1} 100%{transform:translateY(54px);opacity:0} }
+@keyframes mortar { 0%,100%{transform:rotate(-7deg)} 50%{transform:rotate(7deg)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes particle { 0%{transform:translateY(0) translateX(0);opacity:0.8} 100%{transform:translateY(-38px) translateX(var(--dx,8px));opacity:0} }
+.slide.active .eyebrow { animation: fadeUp 0.45s ease both 0.05s; }
+.slide.active .display-title { animation: fadeUp 0.45s ease both 0.15s; }
+.slide.active .body-text { animation: fadeUp 0.45s ease both 0.25s; }
+.slide.active .card { animation: fadeUp 0.45s ease both 0.3s; }
+.slide.active .stat-grid { animation: fadeUp 0.45s ease both 0.3s; }
+.slide.active .tag-row { animation: fadeUp 0.45s ease both 0.32s; }
+.slide.active .project-meta { animation: fadeUp 0.45s ease both 0.38s; }
+.slide.active .step-badge { animation: fadeUp 0.35s ease both 0s; }
+.slide.active .scene-svg { animation: fadeUp 0.5s ease both 0.1s; }
+</style>
+</head>
+<body>
+<div class="bg-glow"><div class="grid-bg"></div></div>
+<div id="prog-bar"><div id="prog-fill"></div></div>
+<div id="top-bar">
+  <span id="top-label">TÜBİTAK 4006</span>
+  <span id="top-count">1 / 9</span>
+</div>
+<div id="stage">
+
+  <div class="slide active" data-index="0">
+    <svg class="scene-svg" width="150" height="120" viewBox="0 0 150 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="75" cy="55" r="42" fill="rgba(29,233,192,0.06)" stroke="rgba(29,233,192,0.2)" stroke-width="0.5"/>
+      <circle cx="75" cy="55" r="28" fill="rgba(29,233,192,0.09)" stroke="rgba(29,233,192,0.28)" stroke-width="0.5"/>
+      <ellipse cx="63" cy="55" rx="7" ry="9" fill="rgba(245,166,35,0.6)"/>
+      <ellipse cx="75" cy="52" rx="7" ry="9" fill="rgba(245,166,35,0.75)"/>
+      <ellipse cx="87" cy="55" rx="7" ry="9" fill="rgba(245,166,35,0.6)"/>
+      <ellipse cx="69" cy="66" rx="7" ry="9" fill="rgba(245,166,35,0.5)"/>
+      <ellipse cx="81" cy="66" rx="7" ry="9" fill="rgba(245,166,35,0.55)"/>
+      <circle cx="30" cy="25" r="2.5" fill="rgba(29,233,192,0.45)" style="animation:pulse 2s ease-in-out infinite"/>
+      <circle cx="120" cy="70" r="2.5" fill="rgba(245,166,35,0.45)" style="animation:pulse 2.4s ease-in-out infinite 0.5s"/>
+      <circle cx="40" cy="90" r="2" fill="rgba(29,233,192,0.35)" style="animation:pulse 1.9s ease-in-out infinite 1s"/>
+      <circle cx="115" cy="28" r="2" fill="rgba(245,166,35,0.35)" style="animation:pulse 2.2s ease-in-out infinite 0.3s"/>
+    </svg>
+    <div class="eyebrow">Mısır Koçanı Projesi</div>
+    <div class="display-title">Atık Sularda<br><em>Krom Giderimi</em></div>
+    <p class="body-text">Mısır koçanının doğal adsorban özellikleri kullanılarak atık sulardaki ağır metal kirliliğinin giderilmesi.</p>
+    <div class="project-meta">
+      <span class="meta-pill">Araştırma</span>
+      <span class="meta-pill">Kimya</span>
+      <span class="meta-pill">Çevre</span>
+    </div>
+  </div>
+
+  <div class="slide" data-index="1">
+    <svg class="scene-svg" width="280" height="130" viewBox="0 0 280 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="55" width="250" height="65" rx="8" fill="rgba(29,116,233,0.1)" stroke="rgba(29,116,233,0.22)" stroke-width="0.5"/>
+      <path d="M15,72 Q55,62 95,72 Q135,82 175,72 Q215,62 265,72" stroke="rgba(100,180,255,0.35)" stroke-width="1.5" fill="none" style="animation:waveX 3s ease-in-out infinite"/>
+      <circle cx="60" cy="95" r="6" fill="rgba(232,98,42,0.65)" style="animation:pulse 2s infinite"/>
+      <circle cx="105" cy="100" r="5" fill="rgba(232,98,42,0.6)" style="animation:pulse 2.5s infinite 0.3s"/>
+      <circle cx="155" cy="90" r="7" fill="rgba(232,98,42,0.65)" style="animation:pulse 1.8s infinite 0.7s"/>
+      <circle cx="200" cy="100" r="5" fill="rgba(232,98,42,0.55)" style="animation:pulse 2.2s infinite 0.5s"/>
+      <circle cx="230" cy="88" r="6" fill="rgba(232,98,42,0.6)" style="animation:pulse 2s infinite 0.2s"/>
+      <text x="60" y="99" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr&#x2076;&#x207A;</text>
+      <text x="155" y="94" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr&#x2076;&#x207A;</text>
+      <text x="230" y="92" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr&#x2076;&#x207A;</text>
+      <rect x="120" y="10" width="14" height="48" rx="3" fill="rgba(100,100,130,0.4)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+      <rect x="114" y="6" width="26" height="9" rx="2" fill="rgba(100,100,130,0.55)"/>
+      <circle cx="127" cy="32" r="4" fill="rgba(232,98,42,0.3)" style="animation:floatUp 2s ease-in infinite"/>
+      <circle cx="130" cy="21" r="3" fill="rgba(232,98,42,0.2)" style="animation:floatUp 2.1s ease-in infinite 0.8s"/>
+      <text x="142" y="50" font-size="9" fill="rgba(200,100,80,0.8)" font-family="DM Sans,sans-serif">Sanayi Atığı</text>
+    </svg>
+    <div class="eyebrow">Problem</div>
+    <div class="display-title">Ağır Metal<br><em>Kirliliği</em></div>
+    <p class="body-text">Konvansiyonel arıtma yöntemleri atık sulardaki <strong>krom (VI)</strong> konsantrasyonunu yeterince düşüremiyor. Ucuz, doğal ve etkili bir çözüme ihtiyaç var.</p>
+  </div>
+
+  <div class="slide" data-index="2">
+    <svg class="scene-svg" width="200" height="145" viewBox="0 0 200 145" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="88" rx="30" ry="52" fill="rgba(245,166,35,0.07)" stroke="rgba(245,166,35,0.28)" stroke-width="0.5"/>
+      <ellipse cx="88" cy="67" rx="7.5" ry="5.5" fill="rgba(245,166,35,0.7)"/>
+      <ellipse cx="104" cy="67" rx="7.5" ry="5.5" fill="rgba(245,166,35,0.65)"/>
+      <ellipse cx="88" cy="79" rx="7.5" ry="5.5" fill="rgba(245,166,35,0.72)"/>
+      <ellipse cx="104" cy="79" rx="7.5" ry="5.5" fill="rgba(245,166,35,0.68)"/>
+      <ellipse cx="88" cy="91" rx="7.5" ry="5.5" fill="rgba(245,166,35,0.65)"/>
+      <ellipse cx="104" cy="91" rx="7.5" ry="5.5" fill="rgba(245,166,35,0.7)"/>
+      <ellipse cx="88" cy="103" rx="7.5" ry="5.5" fill="rgba(245,166,35,0.6)"/>
+      <ellipse cx="104" cy="103" rx="7.5" ry="5.5" fill="rgba(245,166,35,0.62)"/>
+      <ellipse cx="88" cy="115" rx="6.5" ry="4.5" fill="rgba(245,166,35,0.5)"/>
+      <ellipse cx="104" cy="115" rx="6.5" ry="4.5" fill="rgba(245,166,35,0.52)"/>
+      <path d="M100,38 Q122,20 144,26 Q128,42 100,46 Z" fill="rgba(78,203,141,0.42)" stroke="rgba(78,203,141,0.45)" stroke-width="0.5"/>
+      <path d="M100,38 Q78,20 56,26 Q72,42 100,46 Z" fill="rgba(78,203,141,0.38)" stroke="rgba(78,203,141,0.42)" stroke-width="0.5"/>
+      <line x1="100" y1="38" x2="100" y2="46" stroke="rgba(78,203,141,0.6)" stroke-width="1"/>
+      <g opacity="0.45">
+        <polygon points="155,52 163,48 171,52 171,60 163,64 155,60" fill="none" stroke="rgba(29,233,192,0.7)" stroke-width="0.8"/>
+        <polygon points="163,64 171,60 179,64 179,72 171,76 163,72" fill="none" stroke="rgba(29,233,192,0.5)" stroke-width="0.8"/>
+      </g>
+      <text x="168" y="46" font-size="8" fill="rgba(29,233,192,0.65)" font-family="DM Sans,sans-serif">Selüloz</text>
+    </svg>
+    <div class="eyebrow">Çözüm Malzemesi</div>
+    <div class="display-title"><em>Mısır Koçanı</em><br>Neden Etkili?</div>
+    <p class="body-text"><strong>Yüksek selüloz içeriği</strong> ve gözenekli yapısı sayesinde ağır metal iyonlarını yüzeyine bağlıyor. Bölgemizde bol bulunan, <strong>ekonomik ve sürdürülebilir</strong> bir malzeme.</p>
+    <div class="tag-row">
+      <span class="tag">Doğal</span>
+      <span class="tag">Ekonomik</span>
+      <span class="tag">Sürdürülebilir</span>
+      <span class="tag amber">Yüksek Selüloz</span>
+    </div>
+  </div>
+
+  <div class="slide" data-index="3">
+    <div class="step-badge">1</div>
+    <svg class="scene-svg" width="200" height="125" viewBox="0 0 200 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M58,108 Q58,62 68,57 L132,57 Q142,62 142,108 Z" fill="rgba(100,100,130,0.22)" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
+      <ellipse cx="100" cy="108" rx="44" ry="9" fill="rgba(100,100,130,0.28)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+      <ellipse cx="100" cy="57" rx="38" ry="7.5" fill="rgba(120,120,150,0.28)" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>
+      <rect x="92" y="22" width="16" height="50" rx="8" fill="rgba(150,150,180,0.45)" stroke="rgba(255,255,255,0.22)" stroke-width="0.5" style="animation:mortar 1.5s ease-in-out infinite; transform-origin:100px 72px"/>
+      <ellipse cx="100" cy="70" rx="9" ry="4.5" fill="rgba(150,150,180,0.65)"/>
+      <circle cx="80" cy="83" r="3" fill="rgba(245,166,35,0.7)"/>
+      <circle cx="96" cy="90" r="2.5" fill="rgba(245,166,35,0.65)"/>
+      <circle cx="112" cy="80" r="3" fill="rgba(245,166,35,0.6)"/>
+      <circle cx="120" cy="95" r="2" fill="rgba(245,166,35,0.55)"/>
+      <circle cx="71" cy="95" r="2" fill="rgba(245,166,35,0.5)"/>
+      <circle cx="52" cy="68" r="2" fill="rgba(245,166,35,0.5)" style="animation:particle 1.8s ease-out infinite; --dx:-12px"/>
+      <circle cx="148" cy="63" r="2" fill="rgba(245,166,35,0.45)" style="animation:particle 2.1s ease-out infinite 0.5s; --dx:10px"/>
+      <circle cx="138" cy="52" r="1.5" fill="rgba(245,166,35,0.4)" style="animation:particle 1.6s ease-out infinite 1s; --dx:7px"/>
+    </svg>
+    <div class="eyebrow">Adım 1 — Hazırlık</div>
+    <div class="display-title">Mısır Koçanı<br><em>Öğütülüyor</em></div>
+    <p class="body-text">Kuru mısır koçanı havanda dövülerek ince toz haline getirildi. <strong>Küçük tanecik boyutu</strong> yüzey alanını artırarak adsorpsiyon verimliliğini yükseltiyor.</p>
+    <div class="card">
+      <div class="card-label">Neden toz?</div>
+      <div class="card-content">Temas yüzeyi arttıkça Cr⁶⁺ iyonları daha fazla selüloz yüzeyiyle temas kurar ve daha fazla adsorpsiyon gerçekleşir.</div>
+    </div>
+  </div>
+
+  <div class="slide" data-index="4">
+    <div class="step-badge">2</div>
+    <svg class="scene-svg" width="175" height="135" viewBox="0 0 175 135" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M52,22 L52,108 Q52,118 62,118 L113,118 Q123,118 123,108 L123,22 Z" fill="rgba(29,116,233,0.05)" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+      <rect x="46" y="16" width="83" height="10" rx="3" fill="rgba(150,150,190,0.28)" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>
+      <path d="M53,68 L53,108 Q53,116 62,116 L113,116 Q122,116 122,108 L122,68 Z" fill="rgba(232,98,42,0.3)"/>
+      <path d="M53,68 Q70,62 87,68 Q105,74 122,68" stroke="rgba(232,98,42,0.52)" stroke-width="1.2" fill="none" style="animation:waveX 2.5s ease-in-out infinite"/>
+      <line x1="118" y1="84" x2="126" y2="84" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+      <line x1="118" y1="96" x2="126" y2="96" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+      <line x1="118" y1="108" x2="126" y2="108" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+      <text x="129" y="87" font-size="7" fill="rgba(255,255,255,0.32)" font-family="DM Sans,sans-serif">50</text>
+      <text x="129" y="99" font-size="7" fill="rgba(255,255,255,0.32)" font-family="DM Sans,sans-serif">40</text>
+      <circle cx="75" cy="90" r="5" fill="rgba(232,98,42,0.42)" style="animation:pulse 2s infinite"/>
+      <circle cx="92" cy="97" r="4.5" fill="rgba(232,98,42,0.38)" style="animation:pulse 2.3s infinite 0.4s"/>
+      <circle cx="110" cy="86" r="5" fill="rgba(232,98,42,0.42)" style="animation:pulse 1.9s infinite 0.8s"/>
+      <text x="87" y="128" text-anchor="middle" font-size="8" fill="rgba(232,98,42,0.62)" font-family="DM Sans,sans-serif">K&#x2082;Cr&#x2082;O&#x2087;</text>
+      <circle cx="78" cy="46" r="3" fill="rgba(245,166,35,0.7)"/>
+      <circle cx="92" cy="50" r="2.5" fill="rgba(245,166,35,0.6)"/>
+      <circle cx="106" cy="44" r="2.5" fill="rgba(245,166,35,0.65)"/>
+    </svg>
+    <div class="eyebrow">Adım 2 — Hazırlık</div>
+    <div class="display-title">Çözelti<br><em>Hazırlanıyor</em></div>
+    <p class="body-text"><strong>0,025 M potasyum dikromat</strong> çözeltisi hazırlandı. Toz mısır koçanından <strong>0,5 g</strong> tartılarak 50 mL çözeltiye eklendi.</p>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Mısır koçanı</div><div class="stat-value">0,5 <span class="stat-unit">g</span></div></div>
+      <div class="stat-card"><div class="stat-label">Çözelti</div><div class="stat-value">50 <span class="stat-unit">mL</span></div></div>
+      <div class="stat-card"><div class="stat-label">Konsantrasyon</div><div class="stat-value">0,025 <span class="stat-unit">M</span></div></div>
+      <div class="stat-card"><div class="stat-label">Kimyasal</div><div class="stat-value" style="font-size:14px;">K₂Cr₂O₇</div></div>
+    </div>
+  </div>
+
+  <div class="slide" data-index="5">
+    <div class="step-badge">3</div>
+    <svg class="scene-svg" width="280" height="120" viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="140" y="15" text-anchor="middle" font-size="9" fill="rgba(29,233,192,0.55)" font-family="DM Sans,sans-serif">Oda koşulları — Batch yöntemi</text>
+      <g transform="translate(7,17)">
+        <path d="M10,14 L10,88 Q10,96 18,96 L44,96 Q52,96 52,88 L52,14 Z" fill="rgba(29,116,233,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="0.7"/>
+        <rect x="6" y="8" width="50" height="9" rx="2.5" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+        <path d="M11,47 L11,88 Q11,94 18,94 L44,94 Q51,94 51,88 L51,47 Z" fill="rgba(185,55,12,0.5)"/>
+        <path d="M11,47 Q22,41 31,47 Q40,53 51,47" stroke="rgba(205,75,22,0.62)" stroke-width="1" fill="none"/>
+        <circle cx="22" cy="68" r="2.5" fill="rgba(245,166,35,0.6)"/>
+        <circle cx="36" cy="74" r="2" fill="rgba(245,166,35,0.55)"/>
+        <text x="31" y="108" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.42)" font-family="DM Sans,sans-serif">24 saat</text>
+      </g>
+      <g transform="translate(77,17)">
+        <path d="M10,14 L10,88 Q10,96 18,96 L44,96 Q52,96 52,88 L52,14 Z" fill="rgba(29,116,233,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="0.7"/>
+        <rect x="6" y="8" width="50" height="9" rx="2.5" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+        <path d="M11,47 L11,88 Q11,94 18,94 L44,94 Q51,94 51,88 L51,47 Z" fill="rgba(215,95,35,0.42)"/>
+        <path d="M11,47 Q22,41 31,47 Q40,53 51,47" stroke="rgba(220,105,40,0.58)" stroke-width="1" fill="none"/>
+        <circle cx="22" cy="66" r="2.5" fill="rgba(245,166,35,0.6)"/>
+        <circle cx="40" cy="70" r="2" fill="rgba(245,166,35,0.5)"/>
+        <text x="31" y="108" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.42)" font-family="DM Sans,sans-serif">18 saat</text>
+      </g>
+      <g transform="translate(147,17)">
+        <path d="M10,14 L10,88 Q10,96 18,96 L44,96 Q52,96 52,88 L52,14 Z" fill="rgba(29,116,233,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="0.7"/>
+        <rect x="6" y="8" width="50" height="9" rx="2.5" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+        <path d="M11,47 L11,88 Q11,94 18,94 L44,94 Q51,94 51,88 L51,47 Z" fill="rgba(230,140,55,0.35)"/>
+        <path d="M11,47 Q22,41 31,47 Q40,53 51,47" stroke="rgba(230,140,55,0.52)" stroke-width="1" fill="none"/>
+        <circle cx="25" cy="72" r="2" fill="rgba(245,166,35,0.6)"/>
+        <circle cx="38" cy="67" r="2.5" fill="rgba(245,166,35,0.55)"/>
+        <text x="31" y="108" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.42)" font-family="DM Sans,sans-serif">12 saat</text>
+      </g>
+      <g transform="translate(217,17)">
+        <path d="M10,14 L10,88 Q10,96 18,96 L44,96 Q52,96 52,88 L52,14 Z" fill="rgba(29,116,233,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="0.7"/>
+        <rect x="6" y="8" width="50" height="9" rx="2.5" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+        <path d="M11,47 L11,88 Q11,94 18,94 L44,94 Q51,94 51,88 L51,47 Z" fill="rgba(240,185,80,0.28)"/>
+        <path d="M11,47 Q22,41 31,47 Q40,53 51,47" stroke="rgba(240,185,80,0.52)" stroke-width="1" fill="none"/>
+        <circle cx="30" cy="70" r="2" fill="rgba(245,166,35,0.6)"/>
+        <circle cx="20" cy="66" r="2.5" fill="rgba(245,166,35,0.5)"/>
+        <text x="31" y="108" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.42)" font-family="DM Sans,sans-serif">8 saat</text>
+      </g>
+    </svg>
+    <div class="eyebrow">Adım 3 — Deney</div>
+    <div class="display-title"><em>Batch Yöntemi</em><br>ile Bekleme</div>
+    <p class="body-text">Karışım oda koşullarında <strong>8 ile 24 saat</strong> arasında bekletildi. Süre uzadıkça adsorpsiyon artar, çözelti rengi soluklaşır.</p>
+  </div>
+
+  <div class="slide" data-index="6">
+    <div class="step-badge">4</div>
+    <svg class="scene-svg" width="190" height="148" viewBox="0 0 190 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M55,18 L135,18 L110,72 L80,72 Z" fill="rgba(100,160,220,0.08)" stroke="rgba(100,160,220,0.38)" stroke-width="0.8"/>
+      <path d="M60,20 L130,20 L107,70 L83,70 Z" fill="rgba(100,140,220,0.12)" stroke="rgba(100,140,220,0.45)" stroke-width="0.5"/>
+      <text x="95" y="46" text-anchor="middle" font-size="8" fill="rgba(100,180,255,0.62)" font-family="DM Sans,sans-serif">Mavi Bant</text>
+      <text x="95" y="58" text-anchor="middle" font-size="8" fill="rgba(100,180,255,0.62)" font-family="DM Sans,sans-serif">Süzgeç Kağıdı</text>
+      <rect x="88" y="72" width="14" height="20" rx="3" fill="rgba(100,160,220,0.28)" stroke="rgba(100,160,220,0.28)" stroke-width="0.5"/>
+      <ellipse cx="95" cy="99" rx="4" ry="6" fill="rgba(240,185,70,0.6)" style="animation:drip 1.6s ease-in infinite"/>
+      <ellipse cx="95" cy="110" rx="3.5" ry="5" fill="rgba(240,185,70,0.5)" style="animation:drip 1.6s ease-in infinite 0.55s"/>
+      <path d="M65,114 L65,143 Q65,148 73,148 L117,148 Q125,148 125,143 L125,114 Z" fill="rgba(29,116,233,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
+      <path d="M66,128 L66,143 Q66,147 73,147 L117,147 Q124,147 124,143 L124,128 Z" fill="rgba(240,185,70,0.26)"/>
+      <ellipse cx="95" cy="42" rx="13" ry="5.5" fill="rgba(245,166,35,0.38)"/>
+      <circle cx="89" cy="41" r="3" fill="rgba(245,166,35,0.6)"/>
+      <circle cx="100" cy="43" r="2.5" fill="rgba(245,166,35,0.55)"/>
+    </svg>
+    <div class="eyebrow">Adım 4 — Ayırma</div>
+    <div class="display-title">Filtrasyon<br><em>İşlemi</em></div>
+    <p class="body-text">Karışım <strong>mavi bant süzgeç kağıdından</strong> geçirildi. Mısır koçanı filtre üstünde kaldı, arıtılmış çözelti aşağıya toplandı.</p>
+    <div class="card">
+      <div class="card-label">Neden mavi bant?</div>
+      <div class="card-content">Orta gözenek büyüklüğüyle ince toz partikülleri tutarken çözeltinin serbestçe geçişine izin verir.</div>
+    </div>
+  </div>
+
+  <div class="slide" data-index="7">
+    <svg class="scene-svg" width="260" height="130" viewBox="0 0 260 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(18,5)">
+        <path d="M18,8 L18,90 Q18,100 28,100 L62,100 Q72,100 72,90 L72,8 Z" fill="rgba(29,116,233,0.04)" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+        <rect x="12" y="3" width="66" height="9" rx="3" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>
+        <path d="M19,28 L19,90 Q19,98 28,98 L62,98 Q71,98 71,90 L71,28 Z" fill="rgba(195,55,12,0.5)"/>
+        <path d="M19,28 Q33,22 45,28 Q57,34 71,28" stroke="rgba(215,75,22,0.62)" stroke-width="1.2" fill="none"/>
+        <text x="45" y="115" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.48)" font-family="DM Sans,sans-serif">Öncesi</text>
+        <text x="45" y="127" text-anchor="middle" font-size="9" fill="rgba(200,100,55,0.68)" font-family="DM Sans,sans-serif">Koyu turuncu</text>
+      </g>
+      <g transform="translate(104,48)">
+        <path d="M0,14 L28,14" stroke="rgba(29,233,192,0.62)" stroke-width="1.5"/>
+        <path d="M22,9 L30,14 L22,19 Z" fill="rgba(29,233,192,0.62)"/>
+        <text x="14" y="7" text-anchor="middle" font-size="7.5" fill="rgba(29,233,192,0.58)" font-family="DM Sans,sans-serif">Adsorpsiyon</text>
+      </g>
+      <g transform="translate(144,5)">
+        <path d="M18,8 L18,90 Q18,100 28,100 L62,100 Q72,100 72,90 L72,8 Z" fill="rgba(29,116,233,0.04)" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+        <rect x="12" y="3" width="66" height="9" rx="3" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>
+        <path d="M19,28 L19,90 Q19,98 28,98 L62,98 Q71,98 71,90 L71,28 Z" fill="rgba(245,215,80,0.26)"/>
+        <path d="M19,28 Q33,22 45,28 Q57,34 71,28" stroke="rgba(245,215,75,0.52)" stroke-width="1.2" fill="none"/>
+        <text x="45" y="115" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.48)" font-family="DM Sans,sans-serif">Sonrası</text>
+        <text x="45" y="127" text-anchor="middle" font-size="9" fill="rgba(245,215,80,0.68)" font-family="DM Sans,sans-serif">Açık sarı</text>
+      </g>
+    </svg>
+    <div class="eyebrow">Bulgular</div>
+    <div class="display-title">Renk Değişimi<br><em>Gözlemlendi</em></div>
+    <p class="body-text">Çözelti <strong>koyu turuncudan açık sarıya</strong> döndü. Cr⁶⁺ iyonları selüloz yüzeyine tutunarak çözeltiden uzaklaştı — adsorpsiyon başarıyla gerçekleşti.</p>
+  </div>
+
+  <div class="slide" data-index="8">
+    <svg class="scene-svg" width="160" height="110" viewBox="0 0 160 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="80" cy="52" r="42" fill="rgba(29,233,192,0.07)" stroke="rgba(29,233,192,0.22)" stroke-width="0.5"/>
+      <circle cx="80" cy="52" r="30" fill="rgba(29,233,192,0.1)" stroke="rgba(29,233,192,0.28)" stroke-width="0.5"/>
+      <path d="M63,52 L76,65 L99,40" stroke="rgba(29,233,192,0.9)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="80" cy="10" r="4.5" fill="rgba(245,166,35,0.6)" style="animation:pulse 2s infinite"/>
+      <circle cx="122" cy="52" r="4.5" fill="rgba(29,233,192,0.5)" style="animation:pulse 2.3s infinite 0.5s"/>
+      <circle cx="80" cy="94" r="4.5" fill="rgba(78,203,141,0.5)" style="animation:pulse 1.9s infinite 1s"/>
+      <circle cx="38" cy="52" r="4.5" fill="rgba(245,166,35,0.4)" style="animation:pulse 2.1s infinite 0.3s"/>
+    </svg>
+    <div class="eyebrow">Sonuç</div>
+    <div class="display-title">Mısır Koçanı<br><em>İşe Yarıyor</em></div>
+    <p class="body-text">Mısır koçanı atık sulardaki <strong>krom ve ağır metalleri gidermede etkili</strong> bir biyoadsorban. Atık havuz diplerine yerleştirilerek organik kirlilikleri sürekli giderebilir.</p>
+    <div class="tag-row">
+      <span class="tag">Etkili adsorban</span>
+      <span class="tag">Düşük maliyet</span>
+      <span class="tag amber">Aletler geliştirilebilir</span>
+      <span class="tag">Çevre dostu</span>
+    </div>
+  </div>
+
+</div>
+
+<div id="bottom-nav">
+  <div class="nav-btn" id="btn-prev">&#8249;</div>
+  <div id="dots-wrap"></div>
+  <div class="nav-btn" id="btn-next">&#8250;</div>
+</div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide');
+  var total=slides.length;
+  var cur=0;
+  var dotsWrap=document.getElementById('dots-wrap');
+  var progFill=document.getElementById('prog-fill');
+  var topCount=document.getElementById('top-count');
+  for(var i=0;i<total;i++){
+    var d=document.createElement('div');
+    d.className='dot'+(i===0?' active':'');
+    d.dataset.i=i;
+    dotsWrap.appendChild(d);
+  }
+  dotsWrap.addEventListener('click',function(e){
+    var t=e.target.closest('.dot');
+    if(t) goTo(parseInt(t.dataset.i), parseInt(t.dataset.i)>cur?'left':'right');
+  });
+  function updateUI(){
+    progFill.style.width=((cur/(total-1))*100)+'%';
+    topCount.textContent=(cur+1)+' / '+total;
+    dotsWrap.querySelectorAll('.dot').forEach(function(d,i){ d.classList.toggle('active',i===cur); });
+  }
+  function goTo(idx,dir){
+    if(idx===cur||idx<0||idx>=total) return;
+    var prev=cur;
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add(dir==='left'?'exit-left':'exit-right');
+    cur=idx;
+    // set starting position before activating
+    slides[cur].style.transition='none';
+    slides[cur].style.transform=dir==='left'?'translateX(36px)':'translateX(-36px)';
+    slides[cur].style.opacity='0';
+    // force reflow so browser registers starting position
+    slides[cur].getBoundingClientRect();
+    // now clear inline styles and let CSS transition take over
+    slides[cur].style.transition='';
+    slides[cur].style.transform='';
+    slides[cur].style.opacity='';
+    slides[cur].classList.add('active');
+    var ps=slides[prev];
+    setTimeout(function(){ ps.classList.remove('exit-left','exit-right'); },520);
+    updateUI();
+  }
+  document.getElementById('btn-next').addEventListener('click',function(){ goTo(cur+1,'left'); });
+  document.getElementById('btn-prev').addEventListener('click',function(){ goTo(cur-1,'right'); });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' ') goTo(cur+1,'left');
+    else if(e.key==='ArrowLeft') goTo(cur-1,'right');
+  });
+  var tx=0,ty=0;
+  document.addEventListener('touchstart',function(e){ tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
+  document.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-tx;
+    var dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>44){
+      if(dx<0) goTo(cur+1,'left'); else goTo(cur-1,'right');
+    }
+  },{passive:true});
+  document.getElementById('stage').addEventListener('click',function(e){
+    if(e.target.closest('#bottom-nav')||e.target.closest('.nav-btn')) return;
+    if(e.clientX>window.innerWidth/2) goTo(cur+1,'left'); else goTo(cur-1,'right');
+  });
+  updateUI();
+})();
+</script>
+</body>
+</html>
