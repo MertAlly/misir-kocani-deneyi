@@ -473,39 +473,36 @@ body {
   updateUI();
 })();
 </script>
- <div id="gemini-chat-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: sans-serif;">
-    <button onclick="toggleGeminiChat()" id="gemini-btn" style="background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: bold; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 20px;">🧪</span> Proje Bilgi Asistanı
+</script>
+</body>
+</html>
+<div id="gemini-chat-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: sans-serif;">
+    <button onclick="toggleGeminiChat()" id="gemini-btn" style="background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: bold;">
+        🧪 Proje Bilgi Asistanı
     </button>
 
     <div id="gemini-window" style="display: none; width: 350px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); flex-direction: column; overflow: hidden; border: 1px solid #ddd;">
         <div style="background: #28a745; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-            <span>Mısır Koçanı Proje Uzmanı</span>
+            <span>Mısır Koçanı Uzman Asistanı</span>
             <button onclick="toggleGeminiChat()" style="background:none; border:none; color:white; cursor:pointer; font-size: 18px;">✕</button>
         </div>
-        <div id="gemini-messages" style="flex: 1; padding: 15px; overflow-y: auto; font-size: 14px; line-height: 1.5; color: #333;">
+        <div id="gemini-messages" style="flex: 1; padding: 15px; overflow-y: auto; font-size: 14px; color: #333;">
             <div style="background: #f1f1f1; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-                Merhaba! "Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı" projesi hakkında merak ettiğiniz tüm teknik detayları bana sorabilirsiniz.
+                Merhaba! Mısır koçanı projesiyle ilgili teknik detayları sormaya başlayabilirsiniz.
             </div>
         </div>
         <div style="padding: 15px; border-top: 1px solid #eee; display: flex; gap: 5px;">
-            <input type="text" id="gemini-input" placeholder="Sorunuzu buraya yazın..." style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 5px; outline: none;">
+            <input type="text" id="gemini-input" placeholder="Sorunuzu yazın..." style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 5px; outline: none;">
             <button onclick="askGemini()" style="background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Sor</button>
         </div>
     </div>
 </div>
 
 <script>
+// API ANAHTARINI BURAYA TAM OLARAK YAPIŞTIR
 const API_KEY = "AIzaSyDO3Hbb2aoKtsNczYMXycytfQL56Tgdt9Y"; 
 
-const SYSTEM_PROMPT = `Sen 'Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı' isimli TÜBİTAK 4006 projesinin uzman asistanısın. 
-Bilimsel Verilerin:
-- Materyal: Toz haline getirilmiş mısır koçanı.
-- Deney: 0,5 g mısır koçanı, 50 mL 0,025 M Potasyum dikromat çözeltisi.
-- Süreler: 8, 12, 18 ve 24 saatlik sürelerle Batch yöntemi uygulandı.
-- Sonuç: Renk değişimiyle kromun başarılı bir şekilde adsorplandığı kanıtlandı.
-- Önem: Ekonomik, sürdürülebilir ve doğal bir çözüm sunar.
-Lütfen bu bilimsel verilere dayanarak, nazik ve profesyonel bir dille cevap ver.`;
+const SYSTEM_PROMPT = "Sen 'Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı' projesinin uzman asistanısın. Bilgiler: 0,5 g mısır koçanı, 50 mL çözelti, 8-24 saat süre, renk değişimiyle kanıtlanan krom emilimi. Sadece bu bilgilere göre kısa cevaplar ver.";
 
 function toggleGeminiChat() {
     const win = document.getElementById('gemini-window');
@@ -523,29 +520,33 @@ async function askGemini() {
     msgDiv.scrollTop = msgDiv.scrollHeight;
 
     try {
-        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY, {
+        // 'v1beta' yerine daha stabil olan 'v1' kullanıyoruz
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-                contents: [{ parts: [{ text: userText }] }]
+                contents: [{ 
+                    parts: [{ text: `TALİMAT: ${SYSTEM_PROMPT}\n\nSORU: ${userText}` }] 
+                }]
             })
         });
 
         const data = await response.json();
-        const aiResponse = data.candidates[0].content.parts[0].text;
+        
+        if (data.error) {
+            throw new Error(data.error.message);
+        }
 
+        const aiResponse = data.candidates[0].content.parts[0].text;
         msgDiv.innerHTML += `<div style="margin-bottom:10px;"><span style="background:#f1f1f1; color:#333; padding:8px 12px; border-radius:10px; display:inline-block;">${aiResponse}</span></div>`;
-        msgDiv.scrollTop = msgDiv.scrollHeight;
     } catch (error) {
-        msgDiv.innerHTML += `<div style="color:red; font-size:12px;">Hata: Sistem şu an yanıt veremiyor.</div>`;
+        console.error("Hata:", error);
+        msgDiv.innerHTML += `<div style="color:red; font-size:12px; margin-bottom:10px;">Hata: ${error.message}</div>`;
     }
+    msgDiv.scrollTop = msgDiv.scrollHeight;
 }
 
 document.getElementById('gemini-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') askGemini();
 });
 </script>
-</script>
-</body>
-</html>
