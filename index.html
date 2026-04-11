@@ -473,9 +473,9 @@ body {
   updateUI();
 })();
 </script>
-  <div id="gemini-chat-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: sans-serif;">
+ <div id="gemini-chat-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: sans-serif;">
     <button onclick="toggleGeminiChat()" id="gemini-btn" style="background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: bold; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 20px;">🧪</span> Proje Asistanı (Gemini Pro)
+        <span style="font-size: 20px;">🧪</span> Proje Bilgi Asistanı
     </button>
 
     <div id="gemini-window" style="display: none; width: 350px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); flex-direction: column; overflow: hidden; border: 1px solid #ddd;">
@@ -484,7 +484,9 @@ body {
             <button onclick="toggleGeminiChat()" style="background:none; border:none; color:white; cursor:pointer; font-size: 18px;">✕</button>
         </div>
         <div id="gemini-messages" style="flex: 1; padding: 15px; overflow-y: auto; font-size: 14px; line-height: 1.5; color: #333;">
-            <div style="background: #f1f1f1; padding: 10px; border-radius: 10px; margin-bottom: 10px;">Merhaba! Mert Ali ve ekibinin hazırladığı "Mısır Koçanı ile Krom Giderimi" projesi hakkında her şeyi bana sorabilirsiniz.</div>
+            <div style="background: #f1f1f1; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+                Merhaba! "Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı" projesi hakkında merak ettiğiniz tüm teknik detayları bana sorabilirsiniz.
+            </div>
         </div>
         <div style="padding: 15px; border-top: 1px solid #eee; display: flex; gap: 5px;">
             <input type="text" id="gemini-input" placeholder="Sorunuzu buraya yazın..." style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 5px; outline: none;">
@@ -495,14 +497,15 @@ body {
 
 <script>
 const API_KEY = "AIzaSyDO3Hbb2aoKtsNczYMXycytfQL56Tgdt9Y"; 
-const SYSTEM_PROMPT = `Sen Mert Ali Yılmaz'ın 'Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı' projesinin uzman asistanısın. 
+
+const SYSTEM_PROMPT = `Sen 'Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı' isimli TÜBİTAK 4006 projesinin uzman asistanısın. 
 Bilimsel Verilerin:
-- Materyal: Toz haline getirilmiş mısır koçanı[cite: 27, 28].
-- Deney: 0,5 g mısır koçanı, 50 mL 0,025 M Potasyum dikromat çözeltisi[cite: 28].
-- Süreler: 8, 12, 18 ve 24 saatlik sürelerle Batch yöntemi[cite: 25, 28].
-- Sonuç: Renk değişimiyle kromun adsorplandığı gözlemlendi[cite: 30].
-- Önem: Doğal, ekonomik ve sürdürülebilir bir yöntemdir[cite: 12, 33].
-Lütfen bu verilere sadık kalarak, akademik ve nazik bir dille cevap ver.`;
+- Materyal: Toz haline getirilmiş mısır koçanı.
+- Deney: 0,5 g mısır koçanı, 50 mL 0,025 M Potasyum dikromat çözeltisi.
+- Süreler: 8, 12, 18 ve 24 saatlik sürelerle Batch yöntemi uygulandı.
+- Sonuç: Renk değişimiyle kromun başarılı bir şekilde adsorplandığı kanıtlandı.
+- Önem: Ekonomik, sürdürülebilir ve doğal bir çözüm sunar.
+Lütfen bu bilimsel verilere dayanarak, nazik ve profesyonel bir dille cevap ver.`;
 
 function toggleGeminiChat() {
     const win = document.getElementById('gemini-window');
@@ -542,6 +545,7 @@ async function askGemini() {
 document.getElementById('gemini-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') askGemini();
 });
+</script>
 </script>
 </body>
 </html>
