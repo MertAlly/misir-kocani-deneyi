@@ -68,12 +68,11 @@ body {
   opacity: 0; pointer-events: none;
   transition: opacity 0.48s cubic-bezier(.4,0,.2,1), transform 0.48s cubic-bezier(.4,0,.2,1);
   transform: translateX(36px);
-  will-change: transform, opacity; 
-  overflow-y: auto; /* Küçük ekranlarda kesilmeyi önler */
-  overflow-x: hidden;
-  scrollbar-width: none; /* Firefox için scroll gizleme */
+  will-change: transform, opacity;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: none;
 }
-.slide::-webkit-scrollbar { display: none; /* Chrome/Safari için scroll gizleme */ }
+.slide::-webkit-scrollbar { display: none; }
 .slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
 .slide.exit-left { opacity: 0; transform: translateX(-36px); }
 .slide.exit-right { opacity: 0; transform: translateX(36px); }
@@ -109,6 +108,8 @@ body {
 @keyframes mortar { 0%,100%{transform:rotate(-7deg)} 50%{transform:rotate(7deg)} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 @keyframes particle { 0%{transform:translateY(0) translateX(0);opacity:0.8} 100%{transform:translateY(-38px) translateX(var(--dx,8px));opacity:0} }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 .slide.active .eyebrow { animation: fadeUp 0.45s ease both 0.05s; }
 .slide.active .display-title { animation: fadeUp 0.45s ease both 0.15s; }
 .slide.active .body-text { animation: fadeUp 0.45s ease both 0.25s; }
@@ -118,18 +119,126 @@ body {
 .slide.active .project-meta { animation: fadeUp 0.45s ease both 0.38s; }
 .slide.active .step-badge { animation: fadeUp 0.35s ease both 0s; }
 .slide.active .scene-svg { animation: fadeUp 0.5s ease both 0.1s; }
-  /* 8. Sayfadaki yazı kesilmesini kökten çözen kod */
-#slide-8 div, .slide:nth-child(8) div {
-    height: auto !important; 
-    overflow: visible !important; 
-    display: block !important;
-    padding-bottom: 30px !important;
+
+/* ── AI CHAT BUTTON ── */
+#ai-fab {
+  position: fixed; bottom: calc(82px + var(--safe-b)); right: 18px;
+  z-index: 30; width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), #0fb8a0);
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(29,233,192,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+#ai-fab:active { transform: scale(0.93); box-shadow: 0 2px 10px rgba(29,233,192,0.2); }
+#ai-fab svg { width: 22px; height: 22px; color: #06101f; }
+
+/* ── AI CHAT PANEL ── */
+#ai-overlay {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(6,16,31,0.7);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#ai-overlay.open { opacity: 1; pointer-events: auto; }
+#ai-panel {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  height: 80vh; max-height: 640px;
+  background: #0d1b2e;
+  border-top: 0.5px solid rgba(29,233,192,0.2);
+  border-radius: 20px 20px 0 0;
+  display: flex; flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+}
+#ai-panel.open { transform: translateY(0); }
+
+/* panel header */
+#ai-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px 12px;
+  border-bottom: 0.5px solid var(--border);
+  flex-shrink: 0;
+}
+#ai-header-left { display: flex; align-items: center; gap: 10px; }
+#ai-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--teal-dim); border: 1px solid rgba(29,233,192,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500; color: var(--teal);
+}
+#ai-name { font-size: 14px; font-weight: 500; color: var(--text); }
+#ai-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+#ai-close {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface); border: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted); font-size: 14px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-#slide-8 p, .slide:nth-child(8) p {
-    margin-bottom: 10px !important;
-    display: block !important;
+
+
+/* chat area */
+#ai-chat-screen {
+  flex: 1; display: none; flex-direction: column; overflow: hidden;
 }
+#ai-chat-screen.visible { display: flex; }
+#ai-messages {
+  flex: 1; overflow-y: auto; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  scrollbar-width: none;
+}
+#ai-messages::-webkit-scrollbar { display: none; }
+.msg {
+  max-width: 85%; padding: 10px 14px; border-radius: 16px;
+  font-size: 13px; line-height: 1.6;
+}
+.msg.user {
+  align-self: flex-end;
+  background: rgba(29,233,192,0.15);
+  border: 0.5px solid rgba(29,233,192,0.25);
+  color: var(--text); border-bottom-right-radius: 4px;
+}
+.msg.ai {
+  align-self: flex-start;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  color: var(--text); border-bottom-left-radius: 4px;
+}
+.msg.ai.thinking { color: var(--muted); font-style: italic; }
+.msg-dots { display: inline-flex; gap: 4px; align-items: center; }
+.msg-dots span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted); animation: pulse 1.2s ease-in-out infinite;
+}
+.msg-dots span:nth-child(2) { animation-delay: 0.2s; }
+.msg-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* input bar */
+#ai-input-bar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  padding-bottom: calc(12px + var(--safe-b));
+  border-top: 0.5px solid var(--border); flex-shrink: 0;
+}
+#ai-input {
+  flex: 1; padding: 10px 14px;
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: 22px; color: var(--text); font-size: 14px;
+  font-family: var(--body); outline: none; resize: none;
+  line-height: 1.4; max-height: 80px;
+}
+#ai-input:focus { border-color: rgba(29,233,192,0.35); }
+#ai-input::placeholder { color: var(--muted); }
+#ai-send {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: var(--teal); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent; transition: opacity 0.2s;
+  align-self: flex-end;
+}
+#ai-send:active { opacity: 0.75; }
+#ai-send svg { width: 18px; height: 18px; color: #06101f; }
 </style>
 </head>
 <body>
@@ -212,7 +321,7 @@ body {
     </svg>
     <div class="eyebrow">Çözüm Malzemesi</div>
     <div class="display-title"><em>Mısır Koçanı</em><br>Neden Etkili?</div>
-    <p class="body-text"><strong>Yüksek selüloz içeriği</strong> ve gözenekli yapısı sayesinde ağır metal iyonlarını yüzeyine bağlıyor. Bölgemizde bol bulunan, <strong>ekonomik ve sürdürülebilir</strong> bir malzeme.</p>
+    <p class="body-text"><strong>Yüksek selüloz içeriği</span> ve gözenekli yapısı sayesinde ağır metal iyonlarını yüzeyine bağlıyor. Bölgemizde bol bulunan, <strong>ekonomik ve sürdürülebilir</strong> bir malzeme.</p>
     <div class="tag-row">
       <span class="tag">Doğal</span>
       <span class="tag">Ekonomik</span>
@@ -394,7 +503,7 @@ body {
     <div class="tag-row">
       <span class="tag">Etkili adsorban</span>
       <span class="tag">Düşük maliyet</span>
-      <span class="tag amber">Aletler geliştirilebilir</span>
+      <span class="tag amber">Aletsel geliştirilebilir</span>
       <span class="tag">Çevre dostu</span>
     </div>
   </div>
@@ -407,8 +516,48 @@ body {
   <div class="nav-btn" id="btn-next">&#8250;</div>
 </div>
 
+<!-- AI FAB BUTTON -->
+<button id="ai-fab" aria-label="AI Asistan">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+</button>
+
+<!-- OVERLAY -->
+<div id="ai-overlay"></div>
+
+<!-- AI PANEL -->
+<div id="ai-panel">
+  <div id="ai-header">
+    <div id="ai-header-left">
+      <div id="ai-avatar">AI</div>
+      <div>
+        <div id="ai-name">Proje Asistanı</div>
+        <div id="ai-sub">Groq / Llama ile desteklenmektedir</div>
+      </div>
+    </div>
+    <div id="ai-close">&#10005;</div>
+  </div>
+
+
+
+  <!-- CHAT SCREEN -->
+  <div id="ai-chat-screen">
+    <div id="ai-messages"></div>
+    <div id="ai-input-bar">
+      <textarea id="ai-input" rows="1" placeholder="Projeyle ilgili soru sor..."></textarea>
+      <button id="ai-send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
+  /* ── SLIDE LOGIC ── */
   var slides=document.querySelectorAll('.slide');
   var total=slides.length;
   var cur=0;
@@ -436,13 +585,10 @@ body {
     slides[prev].classList.remove('active');
     slides[prev].classList.add(dir==='left'?'exit-left':'exit-right');
     cur=idx;
-    // set starting position before activating
     slides[cur].style.transition='none';
     slides[cur].style.transform=dir==='left'?'translateX(36px)':'translateX(-36px)';
     slides[cur].style.opacity='0';
-    // force reflow so browser registers starting position
     slides[cur].getBoundingClientRect();
-    // now clear inline styles and let CSS transition take over
     slides[cur].style.transition='';
     slides[cur].style.transform='';
     slides[cur].style.opacity='';
@@ -454,12 +600,14 @@ body {
   document.getElementById('btn-next').addEventListener('click',function(){ goTo(cur+1,'left'); });
   document.getElementById('btn-prev').addEventListener('click',function(){ goTo(cur-1,'right'); });
   document.addEventListener('keydown',function(e){
+    if(panelOpen) return;
     if(e.key==='ArrowRight'||e.key===' ') goTo(cur+1,'left');
     else if(e.key==='ArrowLeft') goTo(cur-1,'right');
   });
   var tx=0,ty=0;
   document.addEventListener('touchstart',function(e){ tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
   document.addEventListener('touchend',function(e){
+    if(panelOpen) return;
     var dx=e.changedTouches[0].clientX-tx;
     var dy=e.changedTouches[0].clientY-ty;
     if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>44){
@@ -467,12 +615,119 @@ body {
     }
   },{passive:true});
   document.getElementById('stage').addEventListener('click',function(e){
-    if(e.target.closest('#bottom-nav')||e.target.closest('.nav-btn')) return;
+    if(panelOpen) return;
+    if(e.target.closest('#bottom-nav')||e.target.closest('.nav-btn')||e.target.closest('#ai-fab')) return;
     if(e.clientX>window.innerWidth/2) goTo(cur+1,'left'); else goTo(cur-1,'right');
   });
   updateUI();
+
+  /* ── AI CHAT LOGIC ── */
+  var SYSTEM_PROMPT = "Sen TÜBİTAK 4006 kapsamında yapılmış bir lise öğrenci projesinin asistanısın. Proje adı: 'Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı'. Proje hakkında bilgiler:\n\nPROBLEM: Çevresel sorunların ortadan kalkmasına yarayacak kolay ve ekonomik yollar bulunabilir mi? Konvansiyonel yöntemler (ekstraksiyon, iyon değiştirme, birlikte çöktürme, adsorpsiyon) radyoaktif elementler ve iz metallerin konsantrasyonu için kullanılmaktadır. Kimyasal çöktürme yöntemi yaygın kullanılmasına rağmen deşarj standartlarını sağlamamaktadır.\n\nYÖNTEM: Mısır koçanı yüksek selülozik yapısı ve adsorban özellikleri sayesinde su kirliliğini önlemede doğal, ekonomik ve etkili bir malzemedir. Biyokömür (biochar) veya filtre malzemesi olarak kullanılabilir.\n\nDENEY: Mısır koçanı küçük tanecik boyutuna getirildi. Üzüm çöpünden elde edilen aktif karbon ile krom adsorpsiyonu için 0,025 M Potasyum dikromat çözeltisi kullanıldı. 0,5 g toz mısır koçanı 50 mL 0,025 M K2Cr2O7 çözeltisinde 8-24 saat oda koşullarında Batch yöntemiyle çalışıldı. Mavi bant süzgeç kağıdıyla mısır koçanı ayrıldı.\n\nBULGULAR: Deney sonuçları renk değişimine dayalı gözlemle yapıldı. Adsorpsiyon öncesi çözelti koyu turuncu, sonrası açık sarı renge döndü. Krom (VI) çözeltisinin rengi 8-24 saat arasında değişti.\n\nSONUÇ: Mısır koçanı sulardan ağır metal ve organik kirlilikleri uzaklaştırmada iyi bir adsorban. Atık havuz diplerine yerleştirilerek suların temizlenmesine katkı sağlayabilir. Çalışma aletsel deneylerle geliştirilebilir.\n\nÖĞRENCİLER: Rabia Çakır, Derin Elif Buday, Mert Ali Yılmaz, Emirhan Sözer\nDANIŞMAN ÖĞRETMENLER: Levent Gümüş, Hamit Bolat\nPROJE TÜRÜ: Araştırma | KİMYA | ÇEVRE VE ÇEVREYİ KORUMA\n\nTürkçe cevap ver. Kısa ve anlaşılır ol. Kimya ve çevre bilimiyle ilgili genel soruları da yanıtlayabilirsin.";
+
+  var panelOpen = false;
+  var API_KEY = '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';
+  var history = [];
+
+  var fab = document.getElementById('ai-fab');
+  var overlay = document.getElementById('ai-overlay');
+  var panel = document.getElementById('ai-panel');
+  var closeBtn = document.getElementById('ai-close');
+  var chatScreen = document.getElementById('ai-chat-screen');
+  var messages = document.getElementById('ai-messages');
+  var input = document.getElementById('ai-input');
+  var sendBtn = document.getElementById('ai-send');
+
+  function openPanel(){
+    panelOpen = true;
+    overlay.classList.add('open');
+    panel.classList.add('open');
+    chatScreen.classList.add('visible');
+    if(history.length === 0){
+      addMsg('ai','Merhaba! Mısır koçanı projesi veya kimya ve çevre hakkında soru sorabilirsin.');
+    }
+    setTimeout(function(){ input.focus(); }, 300);
+  }
+  function closePanel(){
+    panelOpen = false;
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+  }
+
+  fab.addEventListener('click', openPanel);
+  overlay.addEventListener('click', closePanel);
+  closeBtn.addEventListener('click', closePanel);
+
+  function addMsg(role, text){
+    var div = document.createElement('div');
+    div.className = 'msg ' + role;
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+  }
+
+  function addThinking(){
+    var div = document.createElement('div');
+    div.className = 'msg ai thinking';
+    div.innerHTML = '<div class="msg-dots"><span></span><span></span><span></span></div>';
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+  }
+
+  async function sendMessage(){
+    var text = input.value.trim();
+    if(!text) return;
+    input.value = '';
+    input.style.height = 'auto';
+    addMsg('user', text);
+    history.push({ role:'user', content: text });
+    var thinking = addThinking();
+
+    try {
+      var messages_payload = [{ role:'system', content: SYSTEM_PROMPT }];
+      history.forEach(function(m){ messages_payload.push({ role: m.role === 'model' ? 'assistant' : 'user', content: m.content }); });
+
+      var body = {
+        model: 'llama-3.3-70b-versatile',
+        messages: messages_payload,
+        max_tokens: 600,
+        temperature: 0.7
+      };
+      var res = await fetch(
+        'https://api.groq.com/openai/v1/chat/completions',
+        { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + API_KEY}, body: JSON.stringify(body) }
+      );
+      var data = await res.json();
+      thinking.remove();
+
+      if(data.error){
+        addMsg('ai','Hata oluştu: ' + (data.error.message || 'Bilinmeyen hata'));
+        return;
+      }
+
+      var reply = data.choices[0].message.content;
+      history.push({ role:'assistant', content: reply });
+      addMsg('ai', reply);
+    } catch(err){
+      thinking.remove();
+      addMsg('ai','Bağlantı hatası. İnternet bağlantını kontrol et.');
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  input.addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+  });
+
 })();
-</script>
 </script>
 </body>
 </html>
