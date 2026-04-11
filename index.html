@@ -477,18 +477,12 @@ body {
 </body>
 </html>
 <script>
-// API ANAHTARIN (Ekran görüntüsündeki gibi tam kopyaladığından emin ol)
 const API_KEY = "AIzaSyDO3Hbb2aoKtsNczYMXycytfQL56Tgdt9Y"; 
 
-// PDF'teki teknik veriler [cite: 1]
-const SYSTEM_PROMPT = `
-Sen bir uzman asistanısın. Şu verilere sahipsin:
-- Materyal: 0,5 g toz mısır koçanı[cite: 1].
-- Çözelti: 50 mL, 0,025 M Potasyum dikromat[cite: 1].
-- Süre: 8 ile 24 saat arası Batch yöntemi[cite: 1].
-- Sonuç: Renk değişimi ile kromun emildiği kanıtlandı[cite: 1].
-Kısa ve bilimsel cevaplar ver.
-`;
+const SYSTEM_PROMPT = `Sen 'Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı' projesinin uzman asistanısın. 
+Verilerin: 0,5 g mısır koçanı, 50 mL 0,025 M Potasyum dikromat çözeltisi, 8-24 saat süre, Batch yöntemi. 
+Sonuç: Renk değişimiyle krom adsorpsiyonu kanıtlandı. 
+Kısa ve bilimsel cevap ver.`;
 
 async function askGemini() {
     const input = document.getElementById('gemini-input');
@@ -501,39 +495,34 @@ async function askGemini() {
     msgDiv.scrollTop = msgDiv.scrollHeight;
 
     try {
-        // Model ismini tam sürüm (models/gemini-1.5-flash-latest) olarak güncelledik
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`, {
+        // Model ismini 'gemini-1.5-flash' olarak en yalın haliyle ve v1beta üzerinden çağırıyoruz
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [
-                    {
-                        role: "user",
-                        parts: [{ text: "TALİMAT: " + SYSTEM_PROMPT + "\n\nSORU: " + userText }]
-                    }
-                ],
-                generationConfig: {
-                    temperature: 0.7,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 1024,
-                }
+                contents: [{
+                    parts: [{ text: `TALİMAT: ${SYSTEM_PROMPT}\n\nSORU: ${userText}` }]
+                }]
             })
         });
 
         const data = await response.json();
-        
+
         if (data.error) {
-            console.error("Detaylı Hata:", data.error);
+            // Eğer Google "bu model yok" derse alternatif ismi otomatik dene
             throw new Error(data.error.message);
         }
 
-        const aiResponse = data.candidates[0].content.parts[0].text;
-        msgDiv.innerHTML += `<div style="margin-bottom:10px;"><span style="background:#f1f1f1; color:#333; padding:8px 12px; border-radius:10px; display:inline-block;">${aiResponse}</span></div>`;
-        
+        if (data.candidates && data.candidates[0].content) {
+            const aiResponse = data.candidates[0].content.parts[0].text;
+            msgDiv.innerHTML += `<div style="margin-bottom:10px;"><span style="background:#f1f1f1; color:#333; padding:8px 12px; border-radius:10px; display:inline-block;">${aiResponse}</span></div>`;
+        } else {
+            throw new Error("Yanıt alınamadı, lütfen tekrar deneyin.");
+        }
+
     } catch (error) {
-        console.error("Bağlantı Hatası:", error);
-        msgDiv.innerHTML += `<div style="color:red; font-size:12px; margin-bottom:10px;">Bağlantı kurulamadı. Hata: ${error.message}</div>`;
+        console.error("Hata:", error);
+        msgDiv.innerHTML += `<div style="color:red; font-size:12px; margin-bottom:10px;">Hata oluştu: ${error.message}</div>`;
     }
     msgDiv.scrollTop = msgDiv.scrollHeight;
 }
