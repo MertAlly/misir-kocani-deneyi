@@ -474,19 +474,20 @@ body {
 })();
 </script>
 <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/0.1.0-beta.5/index.js"></script>
-
+<script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/0.1.0-beta.5/index.js"></script>
 <script>
     new CozeWebSDK.WebChatClient({
       config: {
-        // BURAYA DİKKAT: Bot ID'nin tırnak içinde ve doğru olduğundan emin ol
-        bot_id: '7627220081177116725', 
+        bot_id: '7627220081177116725', // Buraya kendi ID'ni yapıştır
       },
       componentProps: {
         title: 'Krom Emilimi Asistanı',
-        icon: 'https://img.icons8.com/fluency/48/test-tube.png', // Deney tüpü ikonu ekledim, şık durur
       },
-      // Z-index ayarı: Botun diğer görsellerin arkasında kalmasını engeller
-      el: document.body, 
+      // EĞER WHITELIST BULAMIYORSAN ŞU ALTTAKİ SATIRLARI EKLEMEK BAZEN ÇÖZER:
+      auth: {
+        type: 'token',
+        token: '', // Eğer token almadıysan boş kalsın
+      }
     });
 </script>
 </body>
