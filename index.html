@@ -689,7 +689,7 @@ body {
       history.forEach(function(m){ messages_payload.push({ role: m.role === 'model' ? 'assistant' : 'user', content: m.content }); });
 
       var body = {
-        model: 'llama-3.3-70b-versatile',
+        model: 'llama-3.1-8b-instant',
         messages: messages_payload,
         max_tokens: 600,
         temperature: 0.7
