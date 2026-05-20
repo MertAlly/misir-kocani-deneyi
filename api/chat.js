@@ -105,11 +105,12 @@ CEVAP KURALLARIN:
         'Authorization': 'Bearer ' + process.env.GROQ_API_KEY
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: conversationMessages,
-        max_tokens: 1024,
-        temperature: 0.7
-      })
+  model: 'llama-3.3-70b-versatile',
+  messages: conversationMessages,
+  max_tokens: 500, // 1024 çok uzundu, 500 karakter sınırı hem kotanı korur hem modeli yormaz
+  temperature: 0.3, // 0.7'den 0.3'e düşürdük. Artık daha ciddi ve sadece Türkçe konuşacak
+  top_p: 0.1 // Modelin sadece en yüksek ihtimalli (en doğru) kelimeleri seçmesini sağlar
+})
     });
 
     const data = await response.json();
