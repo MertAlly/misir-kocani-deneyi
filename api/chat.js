@@ -105,7 +105,7 @@ CEVAP KURALLARIN:
         'Authorization': 'Bearer ' + process.env.GROQ_API_KEY
       },
       body: JSON.stringify({
-  model: 'gemini-1.5-flash',
+  model: 'qwen/qwen3-32b',
   messages: conversationMessages,
   max_tokens: 500, // 1024 çok uzundu, 500 karakter sınırı hem kotanı korur hem modeli yormaz
   temperature: 0.3, // 0.7'den 0.3'e düşürdük. Artık daha ciddi ve sadece Türkçe konuşacak
