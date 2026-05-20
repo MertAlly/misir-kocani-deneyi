@@ -1,15 +1,12 @@
 export default async function handler(req, res) {
-  // CORS headers — her istekte ayarla
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // OPTIONS isteğini handle et (tarayıcı önce bunu gönderir)
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Sadece POST kabul et
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Sadece POST destekleniyor' });
   }
@@ -85,7 +82,9 @@ CEVAP KURALLARIN:
 5. Kısa, anlaşılır ve lise düzeyinde açıkla.
 6. Gerekmedikçe teknik jargon kullanma, kullanırsan açıkla.`;
 
-  const conversationMessages = [];
+  const conversationMessages = [
+    { role: 'system', content: SYSTEM_PROMPT }
+  ];
 
   if (history && Array.isArray(history)) {
     history.forEach(msg => {
@@ -99,18 +98,17 @@ CEVAP KURALLARIN:
   conversationMessages.push({ role: 'user', content: message });
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
+        'Authorization': 'Bearer ' + process.env.GROQ_API_KEY
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'llama-3.3-70b-versatile',
+        messages: conversationMessages,
         max_tokens: 1024,
-        system: SYSTEM_PROMPT,
-        messages: conversationMessages
+        temperature: 0.7
       })
     });
 
@@ -120,7 +118,7 @@ CEVAP KURALLARIN:
       return res.status(500).json({ error: data.error.message });
     }
 
-    return res.status(200).json({ reply: data.content[0].text });
+    return res.status(200).json({ reply: data.choices[0].message.content });
 
   } catch (err) {
     return res.status(500).json({ error: 'Sunucu hatası: ' + err.message });
