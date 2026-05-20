@@ -108,7 +108,6 @@ body {
 @keyframes mortar { 0%,100%{transform:rotate(-7deg)} 50%{transform:rotate(7deg)} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 @keyframes particle { 0%{transform:translateY(0) translateX(0);opacity:0.8} 100%{transform:translateY(-38px) translateX(var(--dx,8px));opacity:0} }
-@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 .slide.active .eyebrow { animation: fadeUp 0.45s ease both 0.05s; }
 .slide.active .display-title { animation: fadeUp 0.45s ease both 0.15s; }
@@ -119,8 +118,6 @@ body {
 .slide.active .project-meta { animation: fadeUp 0.45s ease both 0.38s; }
 .slide.active .step-badge { animation: fadeUp 0.35s ease both 0s; }
 .slide.active .scene-svg { animation: fadeUp 0.5s ease both 0.1s; }
-
-/* ── AI CHAT BUTTON ── */
 #ai-fab {
   position: fixed; bottom: calc(82px + var(--safe-b)); right: 18px;
   z-index: 30; width: 52px; height: 52px; border-radius: 50%;
@@ -132,8 +129,6 @@ body {
 }
 #ai-fab:active { transform: scale(0.93); box-shadow: 0 2px 10px rgba(29,233,192,0.2); }
 #ai-fab svg { width: 22px; height: 22px; color: #06101f; }
-
-/* ── AI CHAT PANEL ── */
 #ai-overlay {
   position: fixed; inset: 0; z-index: 40;
   background: rgba(6,16,31,0.7);
@@ -152,8 +147,6 @@ body {
   transition: transform 0.4s cubic-bezier(.4,0,.2,1);
 }
 #ai-panel.open { transform: translateY(0); }
-
-/* panel header */
 #ai-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 18px 12px;
@@ -176,10 +169,6 @@ body {
   cursor: pointer; color: var(--muted); font-size: 14px;
   -webkit-tap-highlight-color: transparent;
 }
-
-
-
-/* chat area */
 #ai-chat-screen {
   flex: 1; display: none; flex-direction: column; overflow: hidden;
 }
@@ -214,8 +203,6 @@ body {
 }
 .msg-dots span:nth-child(2) { animation-delay: 0.2s; }
 .msg-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-/* input bar */
 #ai-input-bar {
   display: flex; gap: 8px; padding: 12px 14px;
   padding-bottom: calc(12px + var(--safe-b));
@@ -239,6 +226,7 @@ body {
 }
 #ai-send:active { opacity: 0.75; }
 #ai-send svg { width: 18px; height: 18px; color: #06101f; }
+#ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -283,9 +271,9 @@ body {
       <circle cx="155" cy="90" r="7" fill="rgba(232,98,42,0.65)" style="animation:pulse 1.8s infinite 0.7s"/>
       <circle cx="200" cy="100" r="5" fill="rgba(232,98,42,0.55)" style="animation:pulse 2.2s infinite 0.5s"/>
       <circle cx="230" cy="88" r="6" fill="rgba(232,98,42,0.6)" style="animation:pulse 2s infinite 0.2s"/>
-      <text x="60" y="99" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr&#x2076;&#x207A;</text>
-      <text x="155" y="94" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr&#x2076;&#x207A;</text>
-      <text x="230" y="92" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr&#x2076;&#x207A;</text>
+      <text x="60" y="99" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr⁶⁺</text>
+      <text x="155" y="94" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr⁶⁺</text>
+      <text x="230" y="92" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.75)" font-family="DM Sans,sans-serif">Cr⁶⁺</text>
       <rect x="120" y="10" width="14" height="48" rx="3" fill="rgba(100,100,130,0.4)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
       <rect x="114" y="6" width="26" height="9" rx="2" fill="rgba(100,100,130,0.55)"/>
       <circle cx="127" cy="32" r="4" fill="rgba(232,98,42,0.3)" style="animation:floatUp 2s ease-in infinite"/>
@@ -321,7 +309,7 @@ body {
     </svg>
     <div class="eyebrow">Çözüm Malzemesi</div>
     <div class="display-title"><em>Mısır Koçanı</em><br>Neden Etkili?</div>
-    <p class="body-text"><strong>Yüksek selüloz içeriği</span> ve gözenekli yapısı sayesinde ağır metal iyonlarını yüzeyine bağlıyor. Bölgemizde bol bulunan, <strong>ekonomik ve sürdürülebilir</strong> bir malzeme.</p>
+    <p class="body-text"><strong>Yüksek selüloz içeriği</strong> ve gözenekli yapısı sayesinde ağır metal iyonlarını yüzeyine bağlıyor. Bölgemizde bol bulunan, <strong>ekonomik ve sürdürülebilir</strong> bir malzeme.</p>
     <div class="tag-row">
       <span class="tag">Doğal</span>
       <span class="tag">Ekonomik</span>
@@ -363,15 +351,10 @@ body {
       <rect x="46" y="16" width="83" height="10" rx="3" fill="rgba(150,150,190,0.28)" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>
       <path d="M53,68 L53,108 Q53,116 62,116 L113,116 Q122,116 122,108 L122,68 Z" fill="rgba(232,98,42,0.3)"/>
       <path d="M53,68 Q70,62 87,68 Q105,74 122,68" stroke="rgba(232,98,42,0.52)" stroke-width="1.2" fill="none" style="animation:waveX 2.5s ease-in-out infinite"/>
-      <line x1="118" y1="84" x2="126" y2="84" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
-      <line x1="118" y1="96" x2="126" y2="96" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
-      <line x1="118" y1="108" x2="126" y2="108" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
-      <text x="129" y="87" font-size="7" fill="rgba(255,255,255,0.32)" font-family="DM Sans,sans-serif">50</text>
-      <text x="129" y="99" font-size="7" fill="rgba(255,255,255,0.32)" font-family="DM Sans,sans-serif">40</text>
       <circle cx="75" cy="90" r="5" fill="rgba(232,98,42,0.42)" style="animation:pulse 2s infinite"/>
       <circle cx="92" cy="97" r="4.5" fill="rgba(232,98,42,0.38)" style="animation:pulse 2.3s infinite 0.4s"/>
       <circle cx="110" cy="86" r="5" fill="rgba(232,98,42,0.42)" style="animation:pulse 1.9s infinite 0.8s"/>
-      <text x="87" y="128" text-anchor="middle" font-size="8" fill="rgba(232,98,42,0.62)" font-family="DM Sans,sans-serif">K&#x2082;Cr&#x2082;O&#x2087;</text>
+      <text x="87" y="128" text-anchor="middle" font-size="8" fill="rgba(232,98,42,0.62)" font-family="DM Sans,sans-serif">K₂Cr₂O₇</text>
       <circle cx="78" cy="46" r="3" fill="rgba(245,166,35,0.7)"/>
       <circle cx="92" cy="50" r="2.5" fill="rgba(245,166,35,0.6)"/>
       <circle cx="106" cy="44" r="2.5" fill="rgba(245,166,35,0.65)"/>
@@ -396,8 +379,6 @@ body {
         <rect x="6" y="8" width="50" height="9" rx="2.5" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
         <path d="M11,47 L11,88 Q11,94 18,94 L44,94 Q51,94 51,88 L51,47 Z" fill="rgba(185,55,12,0.5)"/>
         <path d="M11,47 Q22,41 31,47 Q40,53 51,47" stroke="rgba(205,75,22,0.62)" stroke-width="1" fill="none"/>
-        <circle cx="22" cy="68" r="2.5" fill="rgba(245,166,35,0.6)"/>
-        <circle cx="36" cy="74" r="2" fill="rgba(245,166,35,0.55)"/>
         <text x="31" y="108" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.42)" font-family="DM Sans,sans-serif">24 saat</text>
       </g>
       <g transform="translate(77,17)">
@@ -405,8 +386,6 @@ body {
         <rect x="6" y="8" width="50" height="9" rx="2.5" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
         <path d="M11,47 L11,88 Q11,94 18,94 L44,94 Q51,94 51,88 L51,47 Z" fill="rgba(215,95,35,0.42)"/>
         <path d="M11,47 Q22,41 31,47 Q40,53 51,47" stroke="rgba(220,105,40,0.58)" stroke-width="1" fill="none"/>
-        <circle cx="22" cy="66" r="2.5" fill="rgba(245,166,35,0.6)"/>
-        <circle cx="40" cy="70" r="2" fill="rgba(245,166,35,0.5)"/>
         <text x="31" y="108" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.42)" font-family="DM Sans,sans-serif">18 saat</text>
       </g>
       <g transform="translate(147,17)">
@@ -414,8 +393,6 @@ body {
         <rect x="6" y="8" width="50" height="9" rx="2.5" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
         <path d="M11,47 L11,88 Q11,94 18,94 L44,94 Q51,94 51,88 L51,47 Z" fill="rgba(230,140,55,0.35)"/>
         <path d="M11,47 Q22,41 31,47 Q40,53 51,47" stroke="rgba(230,140,55,0.52)" stroke-width="1" fill="none"/>
-        <circle cx="25" cy="72" r="2" fill="rgba(245,166,35,0.6)"/>
-        <circle cx="38" cy="67" r="2.5" fill="rgba(245,166,35,0.55)"/>
         <text x="31" y="108" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.42)" font-family="DM Sans,sans-serif">12 saat</text>
       </g>
       <g transform="translate(217,17)">
@@ -423,8 +400,6 @@ body {
         <rect x="6" y="8" width="50" height="9" rx="2.5" fill="rgba(140,140,170,0.28)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
         <path d="M11,47 L11,88 Q11,94 18,94 L44,94 Q51,94 51,88 L51,47 Z" fill="rgba(240,185,80,0.28)"/>
         <path d="M11,47 Q22,41 31,47 Q40,53 51,47" stroke="rgba(240,185,80,0.52)" stroke-width="1" fill="none"/>
-        <circle cx="30" cy="70" r="2" fill="rgba(245,166,35,0.6)"/>
-        <circle cx="20" cy="66" r="2.5" fill="rgba(245,166,35,0.5)"/>
         <text x="31" y="108" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.42)" font-family="DM Sans,sans-serif">8 saat</text>
       </g>
     </svg>
@@ -445,9 +420,6 @@ body {
       <ellipse cx="95" cy="110" rx="3.5" ry="5" fill="rgba(240,185,70,0.5)" style="animation:drip 1.6s ease-in infinite 0.55s"/>
       <path d="M65,114 L65,143 Q65,148 73,148 L117,148 Q125,148 125,143 L125,114 Z" fill="rgba(29,116,233,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
       <path d="M66,128 L66,143 Q66,147 73,147 L117,147 Q124,147 124,143 L124,128 Z" fill="rgba(240,185,70,0.26)"/>
-      <ellipse cx="95" cy="42" rx="13" ry="5.5" fill="rgba(245,166,35,0.38)"/>
-      <circle cx="89" cy="41" r="3" fill="rgba(245,166,35,0.6)"/>
-      <circle cx="100" cy="43" r="2.5" fill="rgba(245,166,35,0.55)"/>
     </svg>
     <div class="eyebrow">Adım 4 — Ayırma</div>
     <div class="display-title">Filtrasyon<br><em>İşlemi</em></div>
@@ -516,32 +488,26 @@ body {
   <div class="nav-btn" id="btn-next">&#8250;</div>
 </div>
 
-<!-- AI FAB BUTTON -->
 <button id="ai-fab" aria-label="AI Asistan">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
   </svg>
 </button>
 
-<!-- OVERLAY -->
 <div id="ai-overlay"></div>
 
-<!-- AI PANEL -->
 <div id="ai-panel">
   <div id="ai-header">
     <div id="ai-header-left">
       <div id="ai-avatar">AI</div>
       <div>
         <div id="ai-name">Proje Asistanı</div>
-        <div id="ai-sub">Groq / Llama ile desteklenmektedir</div>
+        <div id="ai-sub">Claude ile desteklenmektedir</div>
       </div>
     </div>
     <div id="ai-close">&#10005;</div>
   </div>
 
-
-
-  <!-- CHAT SCREEN -->
   <div id="ai-chat-screen">
     <div id="ai-messages"></div>
     <div id="ai-input-bar">
@@ -557,7 +523,6 @@ body {
 
 <script>
 (function(){
-  /* ── SLIDE LOGIC ── */
   var slides=document.querySelectorAll('.slide');
   var total=slides.length;
   var cur=0;
@@ -621,11 +586,11 @@ body {
   });
   updateUI();
 
-  /* ── AI CHAT LOGIC ── */
-  var SYSTEM_PROMPT = "Sen TÜBİTAK 4006 kapsamında yapılmış bir lise öğrenci projesinin asistanısın. Proje adı: 'Mısır Koçanının Atık Sulardaki Krom Gideriminde Kullanımı'. Proje hakkında bilgiler:\n\nPROBLEM: Çevresel sorunların ortadan kalkmasına yarayacak kolay ve ekonomik yollar bulunabilir mi? Konvansiyonel yöntemler (ekstraksiyon, iyon değiştirme, birlikte çöktürme, adsorpsiyon) radyoaktif elementler ve iz metallerin konsantrasyonu için kullanılmaktadır. Kimyasal çöktürme yöntemi yaygın kullanılmasına rağmen deşarj standartlarını sağlamamaktadır.\n\nYÖNTEM: Mısır koçanı yüksek selülozik yapısı ve adsorban özellikleri sayesinde su kirliliğini önlemede doğal, ekonomik ve etkili bir malzemedir. Biyokömür (biochar) veya filtre malzemesi olarak kullanılabilir.\n\nDENEY: Mısır koçanı küçük tanecik boyutuna getirildi. Üzüm çöpünden elde edilen aktif karbon ile krom adsorpsiyonu için 0,025 M Potasyum dikromat çözeltisi kullanıldı. 0,5 g toz mısır koçanı 50 mL 0,025 M K2Cr2O7 çözeltisinde 8-24 saat oda koşullarında Batch yöntemiyle çalışıldı. Mavi bant süzgeç kağıdıyla mısır koçanı ayrıldı.\n\nBULGULAR: Deney sonuçları renk değişimine dayalı gözlemle yapıldı. Adsorpsiyon öncesi çözelti koyu turuncu, sonrası açık sarı renge döndü. Krom (VI) çözeltisinin rengi 8-24 saat arasında değişti.\n\nSONUÇ: Mısır koçanı sulardan ağır metal ve organik kirlilikleri uzaklaştırmada iyi bir adsorban. Atık havuz diplerine yerleştirilerek suların temizlenmesine katkı sağlayabilir. Çalışma aletsel deneylerle geliştirilebilir.\n\nÖĞRENCİLER: Rabia Çakır, Derin Elif Buday, Mert Ali Yılmaz, Emirhan Sözer\nDANIŞMAN ÖĞRETMENLER: Levent Gümüş, Hamit Bolat\nPROJE TÜRÜ: Araştırma | KİMYA | ÇEVRE VE ÇEVREYİ KORUMA\n\nTürkçe cevap ver. Kısa ve anlaşılır ol. Kimya ve çevre bilimiyle ilgili genel soruları da yanıtlayabilirsin.";
+  /* ── AI CHAT ── */
+  // Vercel deploy ettikten sonra bu URL'yi güncelle!
+  var BACKEND_URL = 'https://SENIN-PROJE-ADIN.vercel.app/api/chat';
 
   var panelOpen = false;
-  var API_KEY = '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';
   var history = [];
 
   var fab = document.getElementById('ai-fab');
@@ -633,7 +598,7 @@ body {
   var panel = document.getElementById('ai-panel');
   var closeBtn = document.getElementById('ai-close');
   var chatScreen = document.getElementById('ai-chat-screen');
-  var messages = document.getElementById('ai-messages');
+  var messagesEl = document.getElementById('ai-messages');
   var input = document.getElementById('ai-input');
   var sendBtn = document.getElementById('ai-send');
 
@@ -661,8 +626,8 @@ body {
     var div = document.createElement('div');
     div.className = 'msg ' + role;
     div.textContent = text;
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
     return div;
   }
 
@@ -670,8 +635,8 @@ body {
     var div = document.createElement('div');
     div.className = 'msg ai thinking';
     div.innerHTML = '<div class="msg-dots"><span></span><span></span><span></span></div>';
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
     return div;
   }
 
@@ -680,38 +645,34 @@ body {
     if(!text) return;
     input.value = '';
     input.style.height = 'auto';
+    sendBtn.disabled = true;
     addMsg('user', text);
-    history.push({ role:'user', content: text });
     var thinking = addThinking();
 
     try {
-      var messages_payload = [{ role:'system', content: SYSTEM_PROMPT }];
-      history.forEach(function(m){ messages_payload.push({ role: m.role === 'model' ? 'assistant' : 'user', content: m.content }); });
+      var res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, history: history })
+      });
 
-      var body = {
-        model: 'llama-3.3-70b-versatile',
-        messages: messages_payload,
-        max_tokens: 600,
-        temperature: 0.7
-      };
-      var res = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
-        { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + API_KEY}, body: JSON.stringify(body) }
-      );
       var data = await res.json();
       thinking.remove();
 
       if(data.error){
-        addMsg('ai','Hata oluştu: ' + (data.error.message || 'Bilinmeyen hata'));
+        addMsg('ai','Hata: ' + data.error);
         return;
       }
 
-      var reply = data.choices[0].message.content;
-      history.push({ role:'assistant', content: reply });
-      addMsg('ai', reply);
+      history.push({ role: 'user', content: text });
+      history.push({ role: 'assistant', content: data.reply });
+      addMsg('ai', data.reply);
+
     } catch(err){
       thinking.remove();
-      addMsg('ai','Bağlantı hatası. İnternet bağlantını kontrol et.');
+      addMsg('ai','Bağlantı hatası. Lütfen tekrar dene.');
+    } finally {
+      sendBtn.disabled = false;
     }
   }
 
