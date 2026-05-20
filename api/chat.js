@@ -1,12 +1,18 @@
 export default async function handler(req, res) {
-  // Sadece POST isteği kabul et
+  // CORS headers — her istekte ayarla
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // OPTIONS isteğini handle et (tarayıcı önce bunu gönderir)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  // Sadece POST kabul et
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Sadece POST destekleniyor' });
   }
-
-  // CORS — GitHub Pages'den gelen isteklere izin ver
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   const { message, history } = req.body;
 
@@ -14,7 +20,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Mesaj boş olamaz' });
   }
 
-  // PDF içeriği — proje bilgileri
   const PROJECT_CONTEXT = `
 Aşağıda TÜBİTAK 4006 kapsamında yapılmış bir lise öğrenci projesinin tam içeriği yer almaktadır.
 Bu, soruları yanıtlarken ÖNCE başvurman gereken ANA KAYNAKTIR.
@@ -80,7 +85,6 @@ CEVAP KURALLARIN:
 5. Kısa, anlaşılır ve lise düzeyinde açıkla.
 6. Gerekmedikçe teknik jargon kullanma, kullanırsan açıkla.`;
 
-  // Konuşma geçmişini hazırla
   const conversationMessages = [];
 
   if (history && Array.isArray(history)) {
@@ -92,7 +96,6 @@ CEVAP KURALLARIN:
     });
   }
 
-  // Yeni mesajı ekle
   conversationMessages.push({ role: 'user', content: message });
 
   try {
@@ -117,9 +120,7 @@ CEVAP KURALLARIN:
       return res.status(500).json({ error: data.error.message });
     }
 
-    return res.status(200).json({
-      reply: data.content[0].text
-    });
+    return res.status(200).json({ reply: data.content[0].text });
 
   } catch (err) {
     return res.status(500).json({ error: 'Sunucu hatası: ' + err.message });
