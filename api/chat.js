@@ -108,8 +108,8 @@ CEVAP KURALLARIN:
   model: 'qwen/qwen3-32b',
   messages: conversationMessages,
   max_tokens: 500, // 1024 çok uzundu, 500 karakter sınırı hem kotanı korur hem modeli yormaz
-  temperature: 0.3, // 0.7'den 0.3'e düşürdük. Artık daha ciddi ve sadece Türkçe konuşacak
-  top_p: 0.1 // Modelin sadece en yüksek ihtimalli (en doğru) kelimeleri seçmesini sağlar
+  temperature: 0.4, // 0.7'den 0.3'e düşürdük. Artık daha ciddi ve sadece Türkçe konuşacak
+  top_p: 0.8 // Modelin sadece en yüksek ihtimalli (en doğru) kelimeleri seçmesini sağlar
 })
     });
 
