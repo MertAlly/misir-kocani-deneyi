@@ -119,7 +119,11 @@ CEVAP KURALLARIN:
       return res.status(500).json({ error: data.error.message });
     }
 
-    return res.status(200).json({ reply: data.choices[0].message.content });
+    // Yapay zekanın iç sesini (<think>...</think>) havada yakalayıp temizler.
+    let cleanReply = data.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+
+    // Sitenize giden cevap artık tamamen temiz olan 'cleanReply' olacak.
+    return res.status(200).json({ reply: cleanReply });
 
   } catch (err) {
     return res.status(500).json({ error: 'Sunucu hatası: ' + err.message });
