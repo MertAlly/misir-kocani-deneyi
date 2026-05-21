@@ -79,7 +79,7 @@ CEVAP KURALLARIN:
 2. Bir soru sorulduğunda doğrudan cevaba geç. Girişte "Proje belgesine göre" veya "Projede bu bilgi yok ama" gibi kalıpları ASLA kullanma. 
 3. Bilgi proje belgesinde varsa o bilgiyi kullanarak direkt yanıt ver. Proje belgesinde yoksa, kimya, çevre bilimi veya adsorpsiyon konularındaki genel bilginle sanki projenin bir parçasıymış gibi akıcı ve doğrudan yanıtla.
 4. Her zaman Türkçe yanıt ver.
-5. Kısa, anlaşılır ve lise düzeyinde açıkla.
+5. Cevaplarını her zaman maksimum 3-4 cümleyle sınırla, asla çok uzun paragraflar yazma.
 6. Gerekmedikçe teknik jargon kullanma, kullanırsan açıkla.`;
 
   const conversationMessages = [
@@ -107,7 +107,7 @@ CEVAP KURALLARIN:
       body: JSON.stringify({
   model: 'qwen/qwen3-32b',
   messages: conversationMessages,
-  max_tokens: 500, // 1024 çok uzundu, 500 karakter sınırı hem kotanı korur hem modeli yormaz
+  max_tokens: 1024, // 1024 çok uzundu, 500 karakter sınırı hem kotanı korur hem modeli yormaz
   temperature: 0.4, // 0.7'den 0.3'e düşürdük. Artık daha ciddi ve sadece Türkçe konuşacak
   top_p: 0.8 // Modelin sadece en yüksek ihtimalli (en doğru) kelimeleri seçmesini sağlar
 })
