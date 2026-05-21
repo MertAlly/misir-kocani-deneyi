@@ -643,11 +643,18 @@ body {
   panelOpen = false;
   overlay.classList.remove('open');
   panel.classList.remove('open');
-  ttsQueue = [];
-  var a = document.getElementById('tts-audio');
-  if(a){ a.pause(); a.src = ''; }
-}
-function playNextChunk(btn){
+  var ttsQueue = [];
+
+  function closePanel(){
+    panelOpen = false;
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+    ttsQueue = [];
+    var a = document.getElementById('tts-audio');
+    if(a){ a.pause(); a.src = ''; }
+  }
+
+  function playNextChunk(btn){
   if(ttsQueue.length === 0){
     btn.classList.remove('speaking');
     return;
