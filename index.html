@@ -227,6 +227,10 @@ body {
 #ai-send:active { opacity: 0.75; }
 #ai-send svg { width: 18px; height: 18px; color: #06101f; }
 #ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
+  #ai-tts { width:28px; height:28px; border-radius:50%; background:var(--surface); border:0.5px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; transition:all 0.2s; margin-top:6px; }
+#ai-tts svg { width:14px; height:14px; color:var(--muted); }
+#ai-tts.speaking { background:rgba(245,166,35,0.2); border-color:rgba(245,166,35,0.5); animation:pulse 1s ease-in-out infinite; }
+#ai-tts.speaking svg { color:#f5a623; }
   #ai-mic {
   width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
   background: var(--surface); border: 0.5px solid var(--border);
@@ -636,23 +640,52 @@ body {
     setTimeout(function(){ input.focus(); }, 300);
   }
   function closePanel(){
-    panelOpen = false;
-    overlay.classList.remove('open');
-    panel.classList.remove('open');
+  panelOpen = false;
+  overlay.classList.remove('open');
+  panel.classList.remove('open');
+  if(window.speechSynthesis.speaking){
+    window.speechSynthesis.cancel();
   }
+}
 
   fab.addEventListener('click', openPanel);
   overlay.addEventListener('click', closePanel);
   closeBtn.addEventListener('click', closePanel);
 
   function addMsg(role, text){
-    var div = document.createElement('div');
-    div.className = 'msg ' + role;
+  var div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if(role === 'ai'){
+    var textSpan = document.createElement('span');
+    textSpan.textContent = text;
+    div.appendChild(textSpan);
+    var ttsBtn = document.createElement('button');
+    ttsBtn.id = 'ai-tts';
+    ttsBtn.title = 'Sesli dinle';
+    ttsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+    ttsBtn.addEventListener('click', function(){
+      if(window.speechSynthesis.speaking){
+        window.speechSynthesis.cancel();
+        ttsBtn.classList.remove('speaking');
+        return;
+      }
+      var utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'tr-TR';
+      utt.rate = 1;
+      utt.pitch = 1;
+      ttsBtn.classList.add('speaking');
+      utt.onend = function(){ ttsBtn.classList.remove('speaking'); };
+      utt.onerror = function(){ ttsBtn.classList.remove('speaking'); };
+      window.speechSynthesis.speak(utt);
+    });
+    div.appendChild(ttsBtn);
+  } else {
     div.textContent = text;
-    messagesEl.appendChild(div);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-    return div;
   }
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return div;
+}
 
   function addThinking(){
     var div = document.createElement('div');
