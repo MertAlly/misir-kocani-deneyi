@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="mobile-web-app-capable" content="yes"> <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#06101f">
 <title>Mısır Koçanı — Krom Giderimi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -117,20 +118,6 @@ body {
 .slide.active .project-meta { animation: fadeUp 0.45s ease both 0.38s; }
 .slide.active .step-badge { animation: fadeUp 0.35s ease both 0s; }
 .slide.active .scene-svg { animation: fadeUp 0.5s ease both 0.1s; }
-
-/* Sesli Asistan Mikrofon Butonu Ek CSS Ayarları */
-#ai-mic-btn {
-  background: #101f38; border: 1px solid rgba(29,233,192,0.4);
-  color: var(--teal); padding: 8px 16px; border-radius: 20px;
-  cursor: pointer; display: flex; align-items: center; gap: 8px;
-  font-family: var(--body); font-size: 13px; font-weight: 500;
-  margin-top: 14px; transition: all 0.2s ease;
-}
-#ai-mic-btn.listening {
-  background: var(--teal); color: #06101f;
-  box-shadow: 0 0 12px var(--teal); animation: pulse 1.5s infinite;
-}
-
 #ai-fab {
   position: fixed; bottom: calc(82px + var(--safe-b)); right: 18px;
   z-index: 30; width: 52px; height: 52px; border-radius: 50%;
@@ -322,7 +309,7 @@ body {
     </svg>
     <div class="eyebrow">Çözüm Malzemesi</div>
     <div class="display-title"><em>Mısır Koçanı</em><br>Neden Etkili?</div>
-    <p class="body-text"><strong>Yüksek selüloz içeriği</strong> ve gözenekli yapısı sayesinde ağır metal iyonlarını yüzeyine bağlıyor. Bölgemizde bol bulunan, <strong>ekonomik og sürdürülebilir</strong> bir malzeme.</p>
+    <p class="body-text"><strong>Yüksek selüloz içeriği</strong> ve gözenekli yapısı sayesinde ağır metal iyonlarını yüzeyine bağlıyor. Bölgemizde bol bulunan, <strong>ekonomik ve sürdürülebilir</strong> bir malzeme.</p>
     <div class="tag-row">
       <span class="tag">Doğal</span>
       <span class="tag">Ekonomik</span>
@@ -474,160 +461,234 @@ body {
 
   <div class="slide" data-index="8">
     <svg class="scene-svg" width="160" height="110" viewBox="0 0 160 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="80" cy="52" r="42" fill="rgba(29,233,192,0.07)" stroke="rgba(29,233,192,0.2)" stroke-width="0.5"/>
-      <path d="M62,54 L74,66 L98,42" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="80" cy="52" r="42" fill="rgba(29,233,192,0.07)" stroke="rgba(29,233,192,0.22)" stroke-width="0.5"/>
+      <circle cx="80" cy="52" r="30" fill="rgba(29,233,192,0.1)" stroke="rgba(29,233,192,0.28)" stroke-width="0.5"/>
+      <path d="M63,52 L76,65 L99,40" stroke="rgba(29,233,192,0.9)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="80" cy="10" r="4.5" fill="rgba(245,166,35,0.6)" style="animation:pulse 2s infinite"/>
+      <circle cx="122" cy="52" r="4.5" fill="rgba(29,233,192,0.5)" style="animation:pulse 2.3s infinite 0.5s"/>
+      <circle cx="80" cy="94" r="4.5" fill="rgba(78,203,141,0.5)" style="animation:pulse 1.9s infinite 1s"/>
+      <circle cx="38" cy="52" r="4.5" fill="rgba(245,166,35,0.4)" style="animation:pulse 2.1s infinite 0.3s"/>
     </svg>
     <div class="eyebrow">Sonuç</div>
-    <div class="display-title">Yüksek Başarı<br><em>Oranı</em></div>
-    <p class="body-text">Mısır koçanı ile yapılan arıtımda Cr⁶⁺ iyonlarının gideriminde yüksek verim elde edildi. Çevreci ve sıfır maliyetli bir model kanıtlandı.</p>
+    <div class="display-title">Mısır Koçanı<br><em>İşe Yarıyor</em></div>
+    <p class="body-text">Mısır koçanı atık sulardaki <strong>krom ve ağır metalleri gidermede etkili</strong> bir biyoadsorban. Atık havuz diplerine yerleştirilerek organik kirlilikleri sürekli giderebilir.</p>
+    <div class="tag-row">
+      <span class="tag">Etkili adsorban</span>
+      <span class="tag">Düşük maliyet</span>
+      <span class="tag amber">Aletsel geliştirilebilir</span>
+      <span class="tag">Çevre dostu</span>
+    </div>
   </div>
 
 </div>
 
 <div id="bottom-nav">
-  <div class="nav-btn" id="prev-btn">&larr;</div>
+  <div class="nav-btn" id="btn-prev">&#8249;</div>
   <div id="dots-wrap"></div>
-  <div class="nav-btn" id="next-btn">&rarr;</div>
+  <div class="nav-btn" id="btn-next">&#8250;</div>
 </div>
 
-<button id="ai-fab">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+<button id="ai-fab" aria-label="AI Asistan">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
 </button>
+
 <div id="ai-overlay"></div>
+
 <div id="ai-panel">
   <div id="ai-header">
     <div id="ai-header-left">
       <div id="ai-avatar">AI</div>
       <div>
-        <div id="ai-name">Mısır Koçanı Proje Asistanı</div>
-        <div id="ai-sub">TÜBİTAK 4006 Danışmanı</div>
+        <div id="ai-name">Proje Asistanı</div>
+        <div id="ai-sub">Groq & Qwen AI ile desteklenmektedir</div>
       </div>
     </div>
-    <div id="ai-close">&times;</div>
+    <div id="ai-close">&#10005;</div>
   </div>
-  <div id="ai-chat-screen" class="visible">
-    <div id="ai-messages">
-      <div class="msg ai">Merhaba! Ben proje asistanınızım. Mısır koçanı ile ağır metal arıtımı deneyimiz hakkında jüriye sunum yaparken bana istediğiniz soruyu sorabilirsiniz. İsterseniz aşağıdaki butona basarak benimle sesli de konuşabilirsiniz!</div>
-      <center><button id="ai-mic-btn">🎤 Mikrofonu Aç</button></center>
-    </div>
+
+  <div id="ai-chat-screen">
+    <div id="ai-messages"></div>
     <div id="ai-input-bar">
-      <textarea id="ai-input" placeholder="Sorunuzu yazın veya sesli sorun..." rows="1"></textarea>
-      <button id="ai-send" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      <textarea id="ai-input" rows="1" placeholder="Projeyle ilgili soru sor..."></textarea>
+      <button id="ai-send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
       </button>
     </div>
   </div>
 </div>
 
 <script>
-// Slayt Mantığı Scripti
-const slides = document.querySelectorAll('.slide');
-const dotsWrap = document.getElementById('dots-wrap');
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
-const topCount = document.getElementById('top-count');
-const progFill = document.getElementById('prog-fill');
-let currentSlide = 0;
-
-slides.forEach((_, i) => {
-  const dot = document.createElement('div');
-  dot.className = `dot ${i === 0 ? 'active' : ''}`;
-  dot.addEventListener('click', () => goToSlide(i));
-  dotsWrap.appendChild(dot);
-});
-const dots = document.querySelectorAll('.dot');
-
-function updateSlider() {
-  slides.forEach((slide, i) => {
-    slide.className = 'slide';
-    if(i === currentSlide) slide.classList.add('active');
-    else if(i < currentSlide) slide.classList.add('exit-left');
-    else slide.classList.add('exit-right');
+(function(){
+  var slides=document.querySelectorAll('.slide');
+  var total=slides.length;
+  var cur=0;
+  var dotsWrap=document.getElementById('dots-wrap');
+  var progFill=document.getElementById('prog-fill');
+  var topCount=document.getElementById('top-count');
+  for(var i=0;i<total;i++){
+    var d=document.createElement('div');
+    d.className='dot'+(i===0?' active':'');
+    d.dataset.i=i;
+    dotsWrap.appendChild(d);
+  }
+  dotsWrap.addEventListener('click',function(e){
+    var t=e.target.closest('.dot');
+    if(t) goTo(parseInt(t.dataset.i), parseInt(t.dataset.i)>cur?'left':'right');
   });
-  dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
-  topCount.innerText = `${currentSlide + 1} / ${slides.length}`;
-  progFill.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
-}
+  function updateUI(){
+    progFill.style.width=((cur/(total-1))*100)+'%';
+    topCount.textContent=(cur+1)+' / '+total;
+    dotsWrap.querySelectorAll('.dot').forEach(function(d,i){ d.classList.toggle('active',i===cur); });
+  }
+  function goTo(idx,dir){
+    if(idx===cur||idx<0||idx>=total) return;
+    var prev=cur;
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add(dir==='left'?'exit-left':'exit-right');
+    cur=idx;
+    slides[cur].style.transition='none';
+    slides[cur].style.transform=dir==='left'?'translateX(36px)':'translateX(-36px)';
+    slides[cur].style.opacity='0';
+    slides[cur].getBoundingClientRect();
+    slides[cur].style.transition='';
+    slides[cur].style.transform='';
+    slides[cur].style.opacity='';
+    slides[cur].classList.add('active');
+    var ps=slides[prev];
+    setTimeout(function(){ ps.classList.remove('exit-left','exit-right'); },520);
+    updateUI();
+  }
+  document.getElementById('btn-next').addEventListener('click',function(){ goTo(cur+1,'left'); });
+  document.getElementById('btn-prev').addEventListener('click',function(){ goTo(cur-1,'right'); });
+  document.addEventListener('keydown',function(e){
+    if(panelOpen) return;
+    if(e.key==='ArrowRight'||e.key===' ') goTo(cur+1,'left');
+    else if(e.key==='ArrowLeft') goTo(cur-1,'right');
+  });
+  var tx=0,ty=0;
+  document.addEventListener('touchstart',function(e){ tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(panelOpen) return;
+    var dx=e.changedTouches[0].clientX-tx;
+    var dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>44){
+      if(dx<0) goTo(cur+1,'left'); else goTo(cur-1,'right');
+    }
+  },{passive:true});
+  document.getElementById('stage').addEventListener('click',function(e){
+    if(panelOpen) return;
+    if(e.target.closest('#bottom-nav')||e.target.closest('.nav-btn')||e.target.closest('#ai-fab')) return;
+    if(e.clientX>window.innerWidth/2) goTo(cur+1,'left'); else goTo(cur-1,'right');
+  });
+  updateUI();
 
-function goToSlide(n) { currentSlide = n; updateSlider(); }
-prevBtn.addEventListener('click', () => { if(currentSlide > 0) { currentSlide--; updateSlider(); } });
-nextBtn.addEventListener('click', () => { if(currentSlide < slides.length - 1) { currentSlide++; updateSlider(); } });
-updateSlider();
+  /* ── AI CHAT ── */
+  // Vercel deploy ettikten sonra bu URL'yi güncelle!
+  var BACKEND_URL = 'https://misir-kocani-deneyi.vercel.app/api/chat';
 
-// Panel Açma Kapatma Mantığı
-const fab = document.getElementById('ai-fab');
-const overlay = document.getElementById('ai-overlay');
-const panel = document.getElementById('ai-panel');
-const closeBtn = document.getElementById('ai-close');
-fab.addEventListener('click', () => { panel.classList.add('open'); overlay.classList.add('open'); });
-closeBtn.addEventListener('click', () => { panel.classList.remove('open'); overlay.classList.remove('open'); });
-overlay.addEventListener('click', () => { panel.classList.remove('open'); overlay.classList.remove('open'); });
+  var panelOpen = false;
+  var history = [];
 
-// Metin Girişi Gönderme Butonu Aktifliği
-const aiInput = document.getElementById('ai-input');
-const aiSend = document.getElementById('ai-send');
-aiInput.addEventListener('input', () => { aiSend.disabled = aiInput.value.trim() === ''; });
+  var fab = document.getElementById('ai-fab');
+  var overlay = document.getElementById('ai-overlay');
+  var panel = document.getElementById('ai-panel');
+  var closeBtn = document.getElementById('ai-close');
+  var chatScreen = document.getElementById('ai-chat-screen');
+  var messagesEl = document.getElementById('ai-messages');
+  var input = document.getElementById('ai-input');
+  var sendBtn = document.getElementById('ai-send');
 
-// --- WEB SPEECH API (MİKROFON ENTEGRASYONU) ---
-const micBtn = document.getElementById('ai-mic-btn');
-const messagesContainer = document.getElementById('ai-messages');
+  function openPanel(){
+    panelOpen = true;
+    overlay.classList.add('open');
+    panel.classList.add('open');
+    chatScreen.classList.add('visible');
+    if(history.length === 0){
+      addMsg('ai','Merhaba! Mısır koçanı projesi veya kimya ve çevre hakkında soru sorabilirsin.');
+    }
+    setTimeout(function(){ input.focus(); }, 300);
+  }
+  function closePanel(){
+    panelOpen = false;
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+  }
 
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  
-  recognition.lang = 'tr-TR';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+  fab.addEventListener('click', openPanel);
+  overlay.addEventListener('click', closePanel);
+  closeBtn.addEventListener('click', closePanel);
 
-  micBtn.addEventListener('click', () => {
-    if (micBtn.classList.contains('listening')) {
-      recognition.stop();
-    } else {
-      recognition.start();
+  function addMsg(role, text){
+    var div = document.createElement('div');
+    div.className = 'msg ' + role;
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return div;
+  }
+
+  function addThinking(){
+    var div = document.createElement('div');
+    div.className = 'msg ai thinking';
+    div.innerHTML = '<div class="msg-dots"><span></span><span></span><span></span></div>';
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return div;
+  }
+
+  async function sendMessage(){
+    var text = input.value.trim();
+    if(!text) return;
+    input.value = '';
+    input.style.height = 'auto';
+    sendBtn.disabled = true;
+    addMsg('user', text);
+    var thinking = addThinking();
+
+    try {
+      var res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, history: history })
+      });
+
+      var data = await res.json();
+      thinking.remove();
+
+      if(data.error){
+        addMsg('ai','Hata: ' + data.error);
+        return;
+      }
+
+      history.push({ role: 'user', content: text });
+      history.push({ role: 'assistant', content: data.reply });
+      addMsg('ai', data.reply);
+
+    } catch(err){
+      thinking.remove();
+      addMsg('ai','Bağlantı hatası. Lütfen tekrar dene.');
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
     }
   });
+  input.addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+  });
 
-  recognition.onstart = () => {
-    micBtn.classList.add('listening');
-    micBtn.innerHTML = '🛑 Dinleniyor... Konuşun';
-  };
-
-  recognition.onend = () => {
-    micBtn.classList.remove('listening');
-    micBtn.innerHTML = '🎤 Mikrofonu Aç';
-  };
-
-  recognition.onresult = (event) => {
-    const speechToText = event.results[0][0].transcript;
-    
-    // Kullanıcının konuştuğu cümleyi chat paneline ekle
-    const userMsg = document.createElement('div');
-    userMsg.className = 'msg user';
-    userMsg.innerText = speechToText;
-    messagesContainer.appendChild(userMsg);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    // Örnek Yapay Zeka Cevabı Tetikleme (Jüri için simülasyon)
-    setTimeout(() => {
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'msg ai';
-      aiMsg.innerText = '"' + speechToText + '" sorunuzu jüriye şu şekilde açıklayabiliriz: Deneyimizde mısır koçanındaki gözenekli yapı aktif adsorpsiyon yüzeyi oluşturarak Cr(VI) iyonlarını başarıyla filtrelemiştir.';
-      messagesContainer.appendChild(aiMsg);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 1000);
-  };
-
-  recognition.onerror = (event) => {
-    console.error('Ses tanıma hatası:', event.error);
-    micBtn.classList.remove('listening');
-    micBtn.innerHTML = '🎤 Hata Oluştu, Tekrar Dene';
-  };
-
-} else {
-  micBtn.disabled = true;
-  micBtn.innerHTML = '❌ Tarayıcı Desteklemiyor';
-}
+})();
 </script>
 </body>
 </html>
