@@ -109,7 +109,6 @@ body {
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 @keyframes particle { 0%{transform:translateY(0) translateX(0);opacity:0.8} 100%{transform:translateY(-38px) translateX(var(--dx,8px));opacity:0} }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-@keyframes slideInUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 .slide.active .eyebrow { animation: fadeUp 0.45s ease both 0.05s; }
 .slide.active .display-title { animation: fadeUp 0.45s ease both 0.15s; }
 .slide.active .body-text { animation: fadeUp 0.45s ease both 0.25s; }
@@ -204,75 +203,9 @@ body {
 }
 .msg-dots span:nth-child(2) { animation-delay: 0.2s; }
 .msg-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-/* ── Önerilen Sorular ── */
-#suggested-questions {
-  padding: 0 14px 10px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-#suggested-questions-label {
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 6px 2px 8px;
-  opacity: 0.7;
-}
-#suggested-questions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.suggested-q {
-  background: rgba(29,233,192,0.07);
-  border: 0.5px solid rgba(29,233,192,0.2);
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 12px;
-  color: rgba(210,235,255,0.8);
-  cursor: pointer;
-  text-align: left;
-  font-family: var(--body);
-  line-height: 1.45;
-  transition: background 0.18s, border-color 0.18s, color 0.18s;
-  -webkit-tap-highlight-color: transparent;
-  animation: slideInUp 0.3s ease both;
-}
-.suggested-q:nth-child(1) { animation-delay: 0.05s; }
-.suggested-q:nth-child(2) { animation-delay: 0.12s; }
-.suggested-q:nth-child(3) { animation-delay: 0.19s; }
-.suggested-q:hover, .suggested-q:active {
-  background: rgba(29,233,192,0.15);
-  border-color: rgba(29,233,192,0.38);
-  color: var(--teal);
-}
-.suggested-q-icon {
-  display: inline-block;
-  margin-right: 6px;
-  opacity: 0.55;
-  font-style: normal;
-}
-#suggested-questions.loading .suggested-q {
-  opacity: 0.4;
-  pointer-events: none;
-}
-#sq-spinner {
-  display: none;
-  width: 16px; height: 16px;
-  border: 1.5px solid rgba(29,233,192,0.2);
-  border-top-color: var(--teal);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  margin: 6px auto;
-}
-#suggested-questions.loading #sq-spinner { display: block; }
-
 #ai-input-bar {
-  display: flex; gap: 8px; padding: 10px 14px;
-  padding-bottom: calc(10px + var(--safe-b));
+  display: flex; gap: 8px; padding: 12px 14px;
+  padding-bottom: calc(12px + var(--safe-b));
   border-top: 0.5px solid var(--border); flex-shrink: 0;
 }
 #ai-input {
@@ -294,11 +227,11 @@ body {
 #ai-send:active { opacity: 0.75; }
 #ai-send svg { width: 18px; height: 18px; color: #06101f; }
 #ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
-#ai-tts { width:28px; height:28px; border-radius:50%; background:var(--surface); border:0.5px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; transition:all 0.2s; margin-top:6px; }
+  #ai-tts { width:28px; height:28px; border-radius:50%; background:var(--surface); border:0.5px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; transition:all 0.2s; margin-top:6px; }
 #ai-tts svg { width:14px; height:14px; color:var(--muted); }
 #ai-tts.speaking { background:rgba(245,166,35,0.2); border-color:rgba(245,166,35,0.5); animation:pulse 1s ease-in-out infinite; }
 #ai-tts.speaking svg { color:#f5a623; }
-#ai-mic {
+  #ai-mic {
   width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
   background: var(--surface); border: 0.5px solid var(--border);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -588,7 +521,7 @@ body {
       <div id="ai-avatar">AI</div>
       <div>
         <div id="ai-name">Proje Asistanı</div>
-        <div id="ai-sub">Groq AI ile desteklenmektedir</div>
+        <div id="ai-sub">Groq & Qwen AI ile desteklenmektedir</div>
       </div>
     </div>
     <div id="ai-close">&#10005;</div>
@@ -596,24 +529,16 @@ body {
 
   <div id="ai-chat-screen">
     <div id="ai-messages"></div>
-
-    <!-- Önerilen Sorular Bölümü -->
-    <div id="suggested-questions">
-      <div id="suggested-questions-label">Önerilen sorular</div>
-      <div id="sq-spinner"></div>
-      <div id="suggested-questions-list"></div>
-    </div>
-
     <div id="ai-input-bar">
       <textarea id="ai-input" rows="1" placeholder="Projeyle ilgili soru sor..."></textarea>
       <button id="ai-mic" title="Sesli soru sor">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="8" y1="23" x2="16" y2="23"/>
-        </svg>
-      </button>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/>
+    <line x1="8" y1="23" x2="16" y2="23"/>
+  </svg>
+</button>
       <button id="ai-send">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
@@ -689,56 +614,11 @@ body {
   updateUI();
 
   /* ── AI CHAT ── */
+  // Vercel deploy ettikten sonra bu URL'yi güncelle!
   var BACKEND_URL = 'https://misir-kocani-deneyi.vercel.app/api/chat';
-  var LS_HISTORY = 'mk_chat_history';
-  var LS_MESSAGES = 'mk_chat_messages';
-  var LS_ASKED = 'mk_asked_questions';
-  var LS_SUGGESTED = 'mk_suggested_questions';
 
   var panelOpen = false;
-
-  // localStorage'dan yükle, yoksa boş başla
   var history = [];
-  var askedQuestions = new Set();
-  try {
-    var _h = localStorage.getItem(LS_HISTORY);
-    if(_h) history = JSON.parse(_h);
-    var _a = localStorage.getItem(LS_ASKED);
-    if(_a) askedQuestions = new Set(JSON.parse(_a));
-  } catch(e){}
-
-  function saveHistory(){
-    try {
-      localStorage.setItem(LS_HISTORY, JSON.stringify(history));
-      localStorage.setItem(LS_ASKED, JSON.stringify(Array.from(askedQuestions)));
-    } catch(e){}
-  }
-
-  function saveSuggestedQuestions(questions){
-    try { localStorage.setItem(LS_SUGGESTED, JSON.stringify(questions)); } catch(e){}
-  }
-
-  function loadSavedSuggestedQuestions(){
-    try {
-      var _s = localStorage.getItem(LS_SUGGESTED);
-      if(_s) return JSON.parse(_s);
-    } catch(e){}
-    return null;
-  }
-
-  function saveMessages(){
-    // DOM'daki mesajları {role, text} olarak sakla
-    try {
-      var msgs = [];
-      messagesEl.querySelectorAll('.msg').forEach(function(el){
-        var role = el.classList.contains('user') ? 'user' : 'ai';
-        var span = el.querySelector('span');
-        var text = span ? span.textContent : el.textContent;
-        if(text && !el.classList.contains('thinking')) msgs.push({role:role, text:text});
-      });
-      localStorage.setItem(LS_MESSAGES, JSON.stringify(msgs));
-    } catch(e){}
-  }
 
   var fab = document.getElementById('ai-fab');
   var overlay = document.getElementById('ai-overlay');
@@ -748,89 +628,64 @@ body {
   var messagesEl = document.getElementById('ai-messages');
   var input = document.getElementById('ai-input');
   var sendBtn = document.getElementById('ai-send');
-  var sqList = document.getElementById('suggested-questions-list');
-  var sqSpinner = document.getElementById('sq-spinner');
-  var sqWrap = document.getElementById('suggested-questions');
-
-  // Sayfa yüklenince önceki mesajları geri yükle
-  (function restoreMessages(){
-    try {
-      var saved = localStorage.getItem(LS_MESSAGES);
-      if(!saved) return;
-      var msgs = JSON.parse(saved);
-      msgs.forEach(function(m){ addMsg(m.role, m.text); });
-    } catch(e){}
-  })();
 
   function openPanel(){
     panelOpen = true;
     overlay.classList.add('open');
     panel.classList.add('open');
     chatScreen.classList.add('visible');
-    if(history.length === 0 && messagesEl.children.length === 0){
+    if(history.length === 0){
       addMsg('ai','Merhaba! Mısır koçanı projesi veya kimya ve çevre hakkında soru sorabilirsin.');
-      loadInitialQuestions();
-    } else {
-      // Kaydedilmiş önerilen soruları geri yükle
-      var saved = loadSavedSuggestedQuestions();
-      if(saved && saved.length > 0){
-        renderSuggestedQuestions(saved);
-      } else if(history.length === 0){
-        loadInitialQuestions();
-      }
     }
     setTimeout(function(){ input.focus(); }, 300);
-    // En alta kaydır
-    setTimeout(function(){ messagesEl.scrollTop = messagesEl.scrollHeight; }, 50);
   }
-
   function closePanel(){
-    panelOpen = false;
-    overlay.classList.remove('open');
-    panel.classList.remove('open');
-    if(window.speechSynthesis && window.speechSynthesis.speaking){
-      window.speechSynthesis.cancel();
-    }
+  panelOpen = false;
+  overlay.classList.remove('open');
+  panel.classList.remove('open');
+  if(window.speechSynthesis.speaking){
+    window.speechSynthesis.cancel();
   }
+}
 
   fab.addEventListener('click', openPanel);
   overlay.addEventListener('click', closePanel);
   closeBtn.addEventListener('click', closePanel);
 
   function addMsg(role, text){
-    var div = document.createElement('div');
-    div.className = 'msg ' + role;
-    if(role === 'ai'){
-      var textSpan = document.createElement('span');
-      textSpan.textContent = text;
-      div.appendChild(textSpan);
-      var ttsBtn = document.createElement('button');
-      ttsBtn.id = 'ai-tts';
-      ttsBtn.title = 'Sesli dinle';
-      ttsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
-      ttsBtn.addEventListener('click', function(){
-        if(window.speechSynthesis.speaking){
-          window.speechSynthesis.cancel();
-          ttsBtn.classList.remove('speaking');
-          return;
-        }
-        var utt = new SpeechSynthesisUtterance(text);
-        utt.lang = 'tr-TR';
-        utt.rate = 1.2;
-        utt.pitch = 1;
-        ttsBtn.classList.add('speaking');
-        utt.onend = function(){ ttsBtn.classList.remove('speaking'); };
-        utt.onerror = function(){ ttsBtn.classList.remove('speaking'); };
-        window.speechSynthesis.speak(utt);
-      });
-      div.appendChild(ttsBtn);
-    } else {
-      div.textContent = text;
-    }
-    messagesEl.appendChild(div);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-    return div;
+  var div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if(role === 'ai'){
+    var textSpan = document.createElement('span');
+    textSpan.textContent = text;
+    div.appendChild(textSpan);
+    var ttsBtn = document.createElement('button');
+    ttsBtn.id = 'ai-tts';
+    ttsBtn.title = 'Sesli dinle';
+    ttsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+    ttsBtn.addEventListener('click', function(){
+      if(window.speechSynthesis.speaking){
+        window.speechSynthesis.cancel();
+        ttsBtn.classList.remove('speaking');
+        return;
+      }
+      var utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'tr-TR';
+      utt.rate = 1.2;
+      utt.pitch = 1;
+      ttsBtn.classList.add('speaking');
+      utt.onend = function(){ ttsBtn.classList.remove('speaking'); };
+      utt.onerror = function(){ ttsBtn.classList.remove('speaking'); };
+      window.speechSynthesis.speak(utt);
+    });
+    div.appendChild(ttsBtn);
+  } else {
+    div.textContent = text;
   }
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return div;
+}
 
   function addThinking(){
     var div = document.createElement('div');
@@ -841,127 +696,13 @@ body {
     return div;
   }
 
-  /* ── ÖNERILEN SORULAR ── */
-
-  // Başlangıç soruları (panel ilk açıldığında, hiç konuşma geçmişi yokken)
-  var initialQuestions = [
-    'Krom nedir ve neden tehlikelidir?',
-    'Adsorpsiyon ne demek, nasıl çalışır?',
-    'Bu projede mısır koçanı neden tercih edildi?'
-  ];
-
-  function loadInitialQuestions(){
-    renderSuggestedQuestions(initialQuestions);
-  }
-
-  function renderSuggestedQuestions(questions){
-    sqList.innerHTML = '';
-    questions.forEach(function(q){
-      var btn = document.createElement('button');
-      btn.className = 'suggested-q';
-      btn.innerHTML = '<i class="suggested-q-icon">↗</i>' + q;
-      btn.addEventListener('click', function(){
-        input.value = q;
-        sendMessage();
-      });
-      sqList.appendChild(btn);
-    });
-    saveSuggestedQuestions(questions);
-  }
-
-  function setSQLoading(loading){
-    if(loading){
-      sqWrap.classList.add('loading');
-      sqSpinner.style.display = 'block';
-    } else {
-      sqWrap.classList.remove('loading');
-      sqSpinner.style.display = 'none';
-    }
-  }
-
-  async function fetchSuggestedQuestions(lastAnswer){
-    setSQLoading(true);
-    // Daha önce sorulmuş soruları listeye ekle
-    var alreadyAsked = Array.from(askedQuestions).join(', ');
-
-    var prompt = 'Kullanıcı az önce şu cevabı aldı:\n"' + lastAnswer + '"\n\n' +
-      'Konuşma geçmişi:\n' + history.map(function(m){ return m.role + ': ' + m.content; }).join('\n') + '\n\n' +
-      'Daha önce sorulmuş veya önerilmiş sorular (bunları TEKRAR ÖNERME): ' + (alreadyAsked || 'Yok') + '\n\n' +
-      'Bu kişi konuya yeni başlıyor. Onu giderek daha derin bilgi sahibi yapacak, bir önceki cevapla mantıksal bağlantısı olan, ' +
-      'birbirinden FARKLI 3 soru öner. Her soru kısa ve merak uyandırıcı olsun. ' +
-      'SADECE JSON dizisi döndür, başka hiçbir şey yazma. Format: ["soru1","soru2","soru3"]';
-
-    try {
-      var res = await fetch(BACKEND_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: prompt, history: [], isSuggestion: true })
-      });
-      var data = await res.json();
-      setSQLoading(false);
-
-      if(data.reply){
-        var raw = data.reply.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-        // JSON dizisini yakala
-        var match = raw.match(/\[[\s\S]*?\]/);
-        if(match){
-          var questions = JSON.parse(match[0]);
-          if(Array.isArray(questions) && questions.length > 0){
-            // Daha önce sorulanları filtrele
-            var filtered = questions.filter(function(q){ return !askedQuestions.has(q); }).slice(0,3);
-            if(filtered.length > 0){
-              renderSuggestedQuestions(filtered);
-              return;
-            }
-          }
-        }
-      }
-      // Fallback: cevap parse edilemezse yedek sorular göster
-      renderFallbackQuestions();
-    } catch(e){
-      setSQLoading(false);
-      renderFallbackQuestions();
-    }
-  }
-
-  function renderFallbackQuestions(){
-    var fallbacks = [
-      'Bu yöntemin endüstride kullanım alanları nelerdir?',
-      'Selüloz ile adsorpsiyon arasındaki ilişki nedir?',
-      'Krom kirliliği hangi sektörlerden kaynaklanır?',
-      'Bu deney nasıl daha hassas hale getirilebilir?',
-      'Batch yöntemi ile sürekli akış yöntemi arasındaki fark nedir?',
-      'Mısır koçanı dışında hangi biyoadsorbanlar kullanılabilir?'
-    ];
-    // Rastgele 3 tane seç, daha önce sorulanları atla
-    var available = fallbacks.filter(function(q){ return !askedQuestions.has(q); });
-    var picks = [];
-    while(picks.length < 3 && available.length > 0){
-      var idx = Math.floor(Math.random() * available.length);
-      picks.push(available[idx]);
-      available.splice(idx, 1);
-    }
-    renderSuggestedQuestions(picks);
-  }
-
-  /* ── MESAJ GÖNDERME ── */
   async function sendMessage(){
     var text = input.value.trim();
     if(!text) return;
-
-    // Soruyu "sorulmuşlar" listesine ekle
-    askedQuestions.add(text);
-
     input.value = '';
     input.style.height = 'auto';
     sendBtn.disabled = true;
-
-    // Önerilen soruları sıfırla (yüklenirken görünsün)
-    setSQLoading(true);
-    sqList.innerHTML = '';
-
     addMsg('user', text);
-    saveMessages();
     var thinking = addThinking();
 
     try {
@@ -976,71 +717,61 @@ body {
 
       if(data.error){
         addMsg('ai','Hata: ' + data.error);
-        setSQLoading(false);
-        renderFallbackQuestions();
         return;
       }
 
       history.push({ role: 'user', content: text });
       history.push({ role: 'assistant', content: data.reply });
       addMsg('ai', data.reply);
-      saveHistory();
-      saveMessages();
-
-      // Cevap geldikten sonra yeni sorular üret
-      fetchSuggestedQuestions(data.reply);
 
     } catch(err){
       thinking.remove();
       addMsg('ai','Bağlantı hatası. Lütfen tekrar dene.');
-      setSQLoading(false);
-      renderFallbackQuestions();
     } finally {
       sendBtn.disabled = false;
     }
   }
 
-  /* ── MİKROFON ── */
-  var micBtn = document.getElementById('ai-mic');
-  var recognition = null;
+  // Mikrofon
+var micBtn = document.getElementById('ai-mic');
+var recognition = null;
 
-  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'tr-TR';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'tr-TR';
+  recognition.continuous = false;
+  recognition.interimResults = false;
 
-    recognition.onresult = function(e) {
-      var transcript = e.results[0][0].transcript;
-      input.value = transcript;
-      input.style.height = 'auto';
-      input.style.height = Math.min(input.scrollHeight, 80) + 'px';
+  recognition.onresult = function(e) {
+    var transcript = e.results[0][0].transcript;
+    input.value = transcript;
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 80) + 'px';
+    micBtn.classList.remove('listening');
+  };
+
+  recognition.onend = function() {
+    micBtn.classList.remove('listening');
+  };
+
+  recognition.onerror = function() {
+    micBtn.classList.remove('listening');
+    addMsg('ai', 'Mikrofon erişimi sağlanamadı. Lütfen tarayıcı izinlerini kontrol et.');
+  };
+
+  micBtn.addEventListener('click', function() {
+    if (micBtn.classList.contains('listening')) {
+      recognition.stop();
       micBtn.classList.remove('listening');
-    };
-
-    recognition.onend = function() {
-      micBtn.classList.remove('listening');
-    };
-
-    recognition.onerror = function() {
-      micBtn.classList.remove('listening');
-      addMsg('ai', 'Mikrofon erişimi sağlanamadı. Lütfen tarayıcı izinlerini kontrol et.');
-    };
-
-    micBtn.addEventListener('click', function() {
-      if (micBtn.classList.contains('listening')) {
-        recognition.stop();
-        micBtn.classList.remove('listening');
-      } else {
-        recognition.start();
-        micBtn.classList.add('listening');
-      }
-    });
-  } else {
-    micBtn.style.display = 'none';
-  }
-
+    } else {
+      recognition.start();
+      micBtn.classList.add('listening');
+    }
+  });
+} else {
+  micBtn.style.display = 'none'; // Desteklenmeyen tarayıcılarda gizle
+}
   sendBtn.addEventListener('click', sendMessage);
   input.addEventListener('keydown', function(e){
     if(e.key === 'Enter' && !e.shiftKey){
