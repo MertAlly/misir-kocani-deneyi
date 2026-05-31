@@ -124,7 +124,7 @@ CEVAP KURALLARIN:
         'Authorization': 'Bearer ' + process.env.GROQ_API_KEY
       },
       body: JSON.stringify({
-        model: 'qwen/qwen3-32b',
+        model: 'groq/compound',
         messages: conversationMessages,
         // Öneri isteği için daha az token yeterli
         max_tokens: isSuggestion ? 200 : 1024,
