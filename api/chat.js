@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Sadece POST destekleniyor' });
   }
 
-  const { message, history, isSuggestion } = req.body;
+  const { message, history } = req.body;
 
   if (!message) {
     return res.status(400).json({ error: 'Mesaj boş olamaz' });
@@ -70,21 +70,6 @@ KAYNAKÇA:
 === PROJE BELGESİ SONU ===
 `;
 
-  // Öneri sorusu üretme isteği için ayrı sistem prompt'u
-  const SUGGESTION_SYSTEM_PROMPT = `Sen bir eğitim asistanısın. Görevin, kullanıcının konuyu sıfırdan öğrenmesini sağlayacak sorular üretmek.
-
-Proje konusu: Mısır koçanı kullanılarak atık sulardaki krom (VI) giderimi — TÜBİTAK 4006 lise projesi.
-
-Konu başlıkları: adsorpsiyon, ağır metal kirliliği, selüloz yapısı, krom (Cr⁶⁺) toksisitesi, batch yöntemi, filtrasyon, çevre kimyası, sürdürülebilir malzemeler.
-
-Kurallar:
-- SADECE JSON dizisi döndür: ["soru1","soru2","soru3"]
-- Başka hiçbir şey yazma, açıklama yapma
-- Her soru kısa (max 10 kelime), merak uyandırıcı
-- Sorular birbirinden farklı alt konulara değinsin
-- Kullanıcıyı temel kavramlardan ileri konulara taşıyacak sorular sor
-- Daha önce sorulmuş/önerilmiş soruları tekrarlama`;
-
   const SYSTEM_PROMPT = `Sen TÜBİTAK 4006 kapsamında yapılmış bir lise öğrenci projesinin yapay zeka asistanısın.
 
 ${PROJECT_CONTEXT}
@@ -92,20 +77,16 @@ ${PROJECT_CONTEXT}
 CEVAP KURALLARIN:
 1. Rolünden asla çıkma, her zaman bu projenin asistanı gibi davran.
 2. Bir soru sorulduğunda doğrudan cevaba geç. Girişte "Proje belgesine göre" veya "Projede bu bilgi yok ama" gibi kalıpları ASLA kullanma. 
-3. Bilgi proje belgesinde varsa o bilgiyi kullanarak direkt yanıtla. Proje belgesinde yoksa, kimya, çevre bilimi veya adsorpsiyon konularındaki genel bilginle sanki projenin bir parçasıymış gibi akıcı ve doğrudan yanıtla.
+3. Bilgi proje belgesinde varsa o bilgiyi kullanarak direkt yanıt ver. Proje belgesinde yoksa, kimya, çevre bilimi veya adsorpsiyon konularındaki genel bilginle sanki projenin bir parçasıymış gibi akıcı ve doğrudan yanıtla.
 4. Her zaman Türkçe yanıt ver.
 5. Cevaplarını her zaman maksimum 3-4 cümleyle sınırla, asla çok uzun paragraflar yazma.
 6. Gerekmedikçe teknik jargon kullanma, kullanırsan açıkla.`;
 
-  // Öneri isteği ise daha hafif bir sistem prompt kullan
-  const activeSystemPrompt = isSuggestion ? SUGGESTION_SYSTEM_PROMPT : SYSTEM_PROMPT;
-
   const conversationMessages = [
-    { role: 'system', content: activeSystemPrompt }
+    { role: 'system', content: SYSTEM_PROMPT }
   ];
 
-  // Öneri isteği değilse geçmiş konuşmaları ekle
-  if (!isSuggestion && history && Array.isArray(history)) {
+  if (history && Array.isArray(history)) {
     history.forEach(msg => {
       conversationMessages.push({
         role: msg.role === 'user' ? 'user' : 'assistant',
@@ -124,13 +105,12 @@ CEVAP KURALLARIN:
         'Authorization': 'Bearer ' + process.env.GROQ_API_KEY
       },
       body: JSON.stringify({
-        model: 'groq/compound-mini',
-        messages: conversationMessages,
-        // Öneri isteği için daha az token yeterli
-        max_tokens: isSuggestion ? 200 : 1024,
-        temperature: isSuggestion ? 0.85 : 0.4,
-        top_p: 0.8
-      })
+  model: 'qwen/qwen3-32b',
+  messages: conversationMessages,
+  max_tokens: 1024, // 1024 çok uzundu, 500 karakter sınırı hem kotanı korur hem modeli yormaz
+  temperature: 0.4, // 0.7'den 0.3'e düşürdük. Artık daha ciddi ve sadece Türkçe konuşacak
+  top_p: 0.8 // Modelin sadece en yüksek ihtimalli (en doğru) kelimeleri seçmesini sağlar
+})
     });
 
     const data = await response.json();
@@ -139,11 +119,10 @@ CEVAP KURALLARIN:
       return res.status(500).json({ error: data.error.message });
     }
 
-    // <think>...</think> bloklarını temizle
-    let cleanReply = data.choices[0].message.content
-      .replace(/<think>[\s\S]*?<\/think>/g, '')
-      .trim();
+    // Yapay zekanın iç sesini (<think>...</think>) havada yakalayıp temizler.
+    let cleanReply = data.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
 
+    // Sitenize giden cevap artık tamamen temiz olan 'cleanReply' olacak.
     return res.status(200).json({ reply: cleanReply });
 
   } catch (err) {
