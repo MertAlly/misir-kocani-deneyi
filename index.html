@@ -786,5 +786,127 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
 })();
 </script>
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const aiFab = document.getElementById('ai-fab');
+  const aiMessages = document.getElementById('ai-messages');
+  const aiInput = document.getElementById('ai-input');
+  const aiSend = document.getElementById('ai-send');
+
+  // Butonların estetik durması için yapay zeka paneline uygun CSS ekliyoruz
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .suggestions-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 8px 0 14px 0;
+      padding: 0 4px;
+      animation: fadeUp 0.4s ease both 0.2s;
+    }
+    .sug-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--teal);
+      font-weight: 500;
+      margin-bottom: 2px;
+      opacity: 0.8;
+    }
+    .sug-button {
+      background: rgba(255, 255, 255, 0.03);
+      border: 0.5px solid rgba(255, 255, 255, 0.1);
+      color: rgba(210, 235, 255, 0.8);
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 12.5px;
+      font-family: var(--body);
+      text-align: left;
+      line-height: 1.4;
+      transition: all 0.2s ease;
+    }
+    .sug-button:hover {
+      background: rgba(29, 233, 192, 0.08);
+      border-color: rgba(29, 233, 192, 0.3);
+      color: var(--text);
+    }
+    .sug-button:active {
+      transform: scale(0.98);
+    }
+  `;
+  document.head.appendChild(style);
+
+  // 200 Soruluk Havuzdan Butonları Çeken Ana Fonksiyon
+  async function onerilenSorulariGetir() {
+    try {
+      // Backend'deki chat.js API'sine istek atıyoruz
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: "öneri" }) // Backend'deki havuzu tetikler
+      });
+
+      const data = await response.json();
+      
+      if (data.reply) {
+        // Gelen 3 soruyu ayırıyoruz
+        const sorular = data.reply.split('\n');
+        
+        if (sorular.length >= 3) {
+          // Panel içinde eski öneri kutusu varsa temizle
+          const eskiKutu = document.getElementById('dynamic-sug-box');
+          if (eskiKutu) eskiKutu.remove();
+
+          // Yeni butonlar için kapsayıcı div oluşturuyoruz
+          const sugBox = document.createElement('div');
+          sugBox.id = 'dynamic-sug-box';
+          sugBox.className = 'suggestions-box';
+
+          // Küçük başlık
+          const title = document.createElement('div');
+          title.className = 'sug-title';
+          title.innerText = 'Önerilen Proje Soruları';
+          sugBox.appendChild(title);
+
+          // 3 Butonu tek tek oluşturup yerleştiriyoruz
+          sorular.forEach(soruMetni => {
+            if(!soruMetni.trim()) return;
+            
+            const btn = document.createElement('button');
+            btn.className = 'sug-button';
+            btn.innerText = soruMetni;
+
+            // Butona tıklandığında otomatik mesaj atma mekanizması
+            btn.onclick = () => {
+              if (aiInput) {
+                aiInput.value = soruMetni; // Soruyu kutuya yaz
+                sugBox.remove();           // Tıklandıktan sonra butonları ekrandan kaldır
+                if (aiSend) aiSend.click(); // Gönder butonunu tetikle
+              }
+            };
+            sugBox.appendChild(btn);
+          });
+
+          // Butonları chat ekranının en üstüne (karşılama alanına) iliştiriyoruz
+          if (aiMessages) {
+            aiMessages.prepend(sugBox);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Soru havuzu yüklenirken hata:", err);
+    }
+  }
+
+  // Kullanıcı sağ alttaki Yeşil Yapay Zeka (AI-FAB) butonuna tıkladığında butonları yükle
+  if (aiFab) {
+    aiFab.addEventListener('click', () => {
+      // Panel açılırken hafif gecikmeyle soruları getir ki animasyon takılmasın
+      setTimeout(onerilenSorulariGetir, 300);
+    });
+  }
+});
+</script>
 </body>
 </html>
