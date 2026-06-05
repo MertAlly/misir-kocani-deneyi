@@ -109,6 +109,7 @@ body {
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 @keyframes particle { 0%{transform:translateY(0) translateX(0);opacity:0.8} 100%{transform:translateY(-38px) translateX(var(--dx,8px));opacity:0} }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes slideInUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 .slide.active .eyebrow { animation: fadeUp 0.45s ease both 0.05s; }
 .slide.active .display-title { animation: fadeUp 0.45s ease both 0.15s; }
 .slide.active .body-text { animation: fadeUp 0.45s ease both 0.25s; }
@@ -203,9 +204,75 @@ body {
 }
 .msg-dots span:nth-child(2) { animation-delay: 0.2s; }
 .msg-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ── Önerilen Sorular ── */
+#suggested-questions {
+  padding: 0 14px 10px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+#suggested-questions-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 6px 2px 8px;
+  opacity: 0.7;
+}
+#suggested-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.suggested-q {
+  background: rgba(29,233,192,0.07);
+  border: 0.5px solid rgba(29,233,192,0.2);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: rgba(210,235,255,0.8);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--body);
+  line-height: 1.45;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+  -webkit-tap-highlight-color: transparent;
+  animation: slideInUp 0.3s ease both;
+}
+.suggested-q:nth-child(1) { animation-delay: 0.05s; }
+.suggested-q:nth-child(2) { animation-delay: 0.12s; }
+.suggested-q:nth-child(3) { animation-delay: 0.19s; }
+.suggested-q:hover, .suggested-q:active {
+  background: rgba(29,233,192,0.15);
+  border-color: rgba(29,233,192,0.38);
+  color: var(--teal);
+}
+.suggested-q-icon {
+  display: inline-block;
+  margin-right: 6px;
+  opacity: 0.55;
+  font-style: normal;
+}
+#suggested-questions.loading .suggested-q {
+  opacity: 0.4;
+  pointer-events: none;
+}
+#sq-spinner {
+  display: none;
+  width: 16px; height: 16px;
+  border: 1.5px solid rgba(29,233,192,0.2);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 6px auto;
+}
+#suggested-questions.loading #sq-spinner { display: block; }
+
 #ai-input-bar {
-  display: flex; gap: 8px; padding: 12px 14px;
-  padding-bottom: calc(12px + var(--safe-b));
+  display: flex; gap: 8px; padding: 10px 14px;
+  padding-bottom: calc(10px + var(--safe-b));
   border-top: 0.5px solid var(--border); flex-shrink: 0;
 }
 #ai-input {
@@ -227,11 +294,11 @@ body {
 #ai-send:active { opacity: 0.75; }
 #ai-send svg { width: 18px; height: 18px; color: #06101f; }
 #ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
-  #ai-tts { width:28px; height:28px; border-radius:50%; background:var(--surface); border:0.5px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; transition:all 0.2s; margin-top:6px; }
+#ai-tts { width:28px; height:28px; border-radius:50%; background:var(--surface); border:0.5px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; transition:all 0.2s; margin-top:6px; }
 #ai-tts svg { width:14px; height:14px; color:var(--muted); }
 #ai-tts.speaking { background:rgba(245,166,35,0.2); border-color:rgba(245,166,35,0.5); animation:pulse 1s ease-in-out infinite; }
 #ai-tts.speaking svg { color:#f5a623; }
-  #ai-mic {
+#ai-mic {
   width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
   background: var(--surface); border: 0.5px solid var(--border);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -529,16 +596,24 @@ body {
 
   <div id="ai-chat-screen">
     <div id="ai-messages"></div>
+
+    <!-- Önerilen Sorular Bölümü -->
+    <div id="suggested-questions">
+      <div id="suggested-questions-label">Önerilen sorular</div>
+      <div id="sq-spinner"></div>
+      <div id="suggested-questions-list"></div>
+    </div>
+
     <div id="ai-input-bar">
       <textarea id="ai-input" rows="1" placeholder="Projeyle ilgili soru sor..."></textarea>
       <button id="ai-mic" title="Sesli soru sor">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-    <line x1="12" y1="19" x2="12" y2="23"/>
-    <line x1="8" y1="23" x2="16" y2="23"/>
-  </svg>
-</button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
       <button id="ai-send">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
@@ -614,11 +689,56 @@ body {
   updateUI();
 
   /* ── AI CHAT ── */
-  // Vercel deploy ettikten sonra bu URL'yi güncelle!
   var BACKEND_URL = 'https://misir-kocani-deneyi.vercel.app/api/chat';
+  var LS_HISTORY = 'mk_chat_history';
+  var LS_MESSAGES = 'mk_chat_messages';
+  var LS_ASKED = 'mk_asked_questions';
+  var LS_SUGGESTED = 'mk_suggested_questions';
 
   var panelOpen = false;
+
+  // localStorage'dan yükle, yoksa boş başla
   var history = [];
+  var askedQuestions = new Set();
+  try {
+    var _h = localStorage.getItem(LS_HISTORY);
+    if(_h) history = JSON.parse(_h);
+    var _a = localStorage.getItem(LS_ASKED);
+    if(_a) askedQuestions = new Set(JSON.parse(_a));
+  } catch(e){}
+
+  function saveHistory(){
+    try {
+      localStorage.setItem(LS_HISTORY, JSON.stringify(history));
+      localStorage.setItem(LS_ASKED, JSON.stringify(Array.from(askedQuestions)));
+    } catch(e){}
+  }
+
+  function saveSuggestedQuestions(questions){
+    try { localStorage.setItem(LS_SUGGESTED, JSON.stringify(questions)); } catch(e){}
+  }
+
+  function loadSavedSuggestedQuestions(){
+    try {
+      var _s = localStorage.getItem(LS_SUGGESTED);
+      if(_s) return JSON.parse(_s);
+    } catch(e){}
+    return null;
+  }
+
+  function saveMessages(){
+    // DOM'daki mesajları {role, text} olarak sakla
+    try {
+      var msgs = [];
+      messagesEl.querySelectorAll('.msg').forEach(function(el){
+        var role = el.classList.contains('user') ? 'user' : 'ai';
+        var span = el.querySelector('span');
+        var text = span ? span.textContent : el.textContent;
+        if(text && !el.classList.contains('thinking')) msgs.push({role:role, text:text});
+      });
+      localStorage.setItem(LS_MESSAGES, JSON.stringify(msgs));
+    } catch(e){}
+  }
 
   var fab = document.getElementById('ai-fab');
   var overlay = document.getElementById('ai-overlay');
@@ -628,64 +748,89 @@ body {
   var messagesEl = document.getElementById('ai-messages');
   var input = document.getElementById('ai-input');
   var sendBtn = document.getElementById('ai-send');
+  var sqList = document.getElementById('suggested-questions-list');
+  var sqSpinner = document.getElementById('sq-spinner');
+  var sqWrap = document.getElementById('suggested-questions');
+
+  // Sayfa yüklenince önceki mesajları geri yükle
+  (function restoreMessages(){
+    try {
+      var saved = localStorage.getItem(LS_MESSAGES);
+      if(!saved) return;
+      var msgs = JSON.parse(saved);
+      msgs.forEach(function(m){ addMsg(m.role, m.text); });
+    } catch(e){}
+  })();
 
   function openPanel(){
     panelOpen = true;
     overlay.classList.add('open');
     panel.classList.add('open');
     chatScreen.classList.add('visible');
-    if(history.length === 0){
+    if(history.length === 0 && messagesEl.children.length === 0){
       addMsg('ai','Merhaba! Mısır koçanı projesi veya kimya ve çevre hakkında soru sorabilirsin.');
+      loadInitialQuestions();
+    } else {
+      // Kaydedilmiş önerilen soruları geri yükle
+      var saved = loadSavedSuggestedQuestions();
+      if(saved && saved.length > 0){
+        renderSuggestedQuestions(saved);
+      } else if(history.length === 0){
+        loadInitialQuestions();
+      }
     }
     setTimeout(function(){ input.focus(); }, 300);
+    // En alta kaydır
+    setTimeout(function(){ messagesEl.scrollTop = messagesEl.scrollHeight; }, 50);
   }
+
   function closePanel(){
-  panelOpen = false;
-  overlay.classList.remove('open');
-  panel.classList.remove('open');
-  if(window.speechSynthesis.speaking){
-    window.speechSynthesis.cancel();
+    panelOpen = false;
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+    if(window.speechSynthesis && window.speechSynthesis.speaking){
+      window.speechSynthesis.cancel();
+    }
   }
-}
 
   fab.addEventListener('click', openPanel);
   overlay.addEventListener('click', closePanel);
   closeBtn.addEventListener('click', closePanel);
 
   function addMsg(role, text){
-  var div = document.createElement('div');
-  div.className = 'msg ' + role;
-  if(role === 'ai'){
-    var textSpan = document.createElement('span');
-    textSpan.textContent = text;
-    div.appendChild(textSpan);
-    var ttsBtn = document.createElement('button');
-    ttsBtn.id = 'ai-tts';
-    ttsBtn.title = 'Sesli dinle';
-    ttsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
-    ttsBtn.addEventListener('click', function(){
-      if(window.speechSynthesis.speaking){
-        window.speechSynthesis.cancel();
-        ttsBtn.classList.remove('speaking');
-        return;
-      }
-      var utt = new SpeechSynthesisUtterance(text);
-      utt.lang = 'tr-TR';
-      utt.rate = 1.2;
-      utt.pitch = 1;
-      ttsBtn.classList.add('speaking');
-      utt.onend = function(){ ttsBtn.classList.remove('speaking'); };
-      utt.onerror = function(){ ttsBtn.classList.remove('speaking'); };
-      window.speechSynthesis.speak(utt);
-    });
-    div.appendChild(ttsBtn);
-  } else {
-    div.textContent = text;
+    var div = document.createElement('div');
+    div.className = 'msg ' + role;
+    if(role === 'ai'){
+      var textSpan = document.createElement('span');
+      textSpan.textContent = text;
+      div.appendChild(textSpan);
+      var ttsBtn = document.createElement('button');
+      ttsBtn.id = 'ai-tts';
+      ttsBtn.title = 'Sesli dinle';
+      ttsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+      ttsBtn.addEventListener('click', function(){
+        if(window.speechSynthesis.speaking){
+          window.speechSynthesis.cancel();
+          ttsBtn.classList.remove('speaking');
+          return;
+        }
+        var utt = new SpeechSynthesisUtterance(text);
+        utt.lang = 'tr-TR';
+        utt.rate = 1.2;
+        utt.pitch = 1;
+        ttsBtn.classList.add('speaking');
+        utt.onend = function(){ ttsBtn.classList.remove('speaking'); };
+        utt.onerror = function(){ ttsBtn.classList.remove('speaking'); };
+        window.speechSynthesis.speak(utt);
+      });
+      div.appendChild(ttsBtn);
+    } else {
+      div.textContent = text;
+    }
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return div;
   }
-  messagesEl.appendChild(div);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  return div;
-}
 
   function addThinking(){
     var div = document.createElement('div');
@@ -696,13 +841,242 @@ body {
     return div;
   }
 
+  /* ── ÖNERILEN SORULAR (0 token, tamamen frontend) ── */
+
+  // Her soru: { q: 'soru metni', topic: 'konu' }
+  var SORU_BANKASI = [
+
+    // ── KROM VE AĞIR METALLER ──
+    { q: 'Krom içeren suyu içsek gerçekten ne olur?', topic: 'krom' },
+    { q: 'Krom hangi fabrikalarda kullanılır?', topic: 'krom' },
+    { q: 'Ağır metal neden "ağır" diye adlandırılıyor?', topic: 'krom' },
+    { q: 'Krom deriye değse ne olur?', topic: 'krom' },
+    { q: 'Türkiye\'de krom kirliliği gerçekten ciddi bir sorun mu?', topic: 'krom' },
+    { q: 'Krom kirliliği göle ya da nehre karışırsa oradaki balıklara ne olur?', topic: 'krom' },
+    { q: 'Krom insan vücuduna ne kadar sürede zarar vermeye başlar?', topic: 'krom' },
+    { q: 'Krom 3+ ile krom 6+ arasındaki fark ne, neden 6+ daha tehlikeli?', topic: 'krom' },
+    { q: 'Ağır metaller neden diğer kirleticiler gibi zamanla yok olmuyor?', topic: 'krom' },
+    { q: 'Fabrikalar atık suyu arıtmadan neden doğrudan boşaltabiliyor?', topic: 'krom' },
+    { q: 'Krom zehirlenmesi nasıl tedavi edilir?', topic: 'krom' },
+    { q: 'Krom iyonları suda neden turuncu renk oluşturuyor?', topic: 'krom' },
+    { q: 'Krom 6+ vücutta hücrelere nasıl zarar veriyor?', topic: 'krom' },
+    { q: 'Ağır metaller su içinde nasıl çözünüyor, neden kolayca çökelmiyor?', topic: 'krom' },
+    { q: 'Suda izin verilen maksimum krom miktarı ne kadar olmalı?', topic: 'krom' },
+    { q: 'Krom sadece endüstride mi kullanılıyor, başka nerede karşımıza çıkar?', topic: 'krom' },
+
+    // ── ADSORPSIYON ──
+    { q: 'Adsorpsiyon kelimesi ne anlama geliyor, nasıl açıklarız?', topic: 'adsorpsiyon' },
+    { q: 'Adsorpsiyon ile emme arasındaki fark ne?', topic: 'adsorpsiyon' },
+    { q: 'Aktif karbon nasıl çalışıyor, su filtrelerinde neden kullanılıyor?', topic: 'adsorpsiyon' },
+    { q: 'Bir şeyin iyi adsorban olması için ne gerekiyor?', topic: 'adsorpsiyon' },
+    { q: 'Adsorpsiyon tamamlanınca malzeme ne oluyor, tekrar kullanılabilir mi?', topic: 'adsorpsiyon' },
+    { q: 'Sıcaklık adsorpsiyonu etkiler mi, soğuk suda daha mı iyi çalışır?', topic: 'adsorpsiyon' },
+    { q: 'Suyun asitliği adsorpsiyonu nasıl etkiler?', topic: 'adsorpsiyon' },
+    { q: 'Malzemeyi toz yapmak adsorpsiyonu neden bu kadar artırıyor?', topic: 'adsorpsiyon' },
+    { q: 'Adsorpsiyon ile kimyasal çöktürme yöntemi arasındaki temel fark ne?', topic: 'adsorpsiyon' },
+    { q: 'Bir madde yüzeye tutunduktan sonra tekrar suya salınabilir mi?', topic: 'adsorpsiyon' },
+    { q: 'Gözenek büyüklüğü ile tutunma kapasitesi arasında nasıl bir ilişki var?', topic: 'adsorpsiyon' },
+    { q: 'Fiziksel tutunma ile kimyasal tutunma arasındaki fark ne?', topic: 'adsorpsiyon' },
+    { q: 'Adsorpsiyon ile absorpsiyon arasındaki fark ne?', topic: 'adsorpsiyon' },
+
+    // ── MISIR KOÇANI ──
+    { q: 'Mısır koçanı normalde ne işe yarıyor, neden çöpe atılıyor?', topic: 'misir' },
+    { q: 'Mısır koçanından başka hangi tarım atıkları böyle kullanılabilir?', topic: 'misir' },
+    { q: 'Mısır koçanı neden bu kadar iyi bir süzgeç görevi görüyor?', topic: 'misir' },
+    { q: 'Dünyada mısır koçanı ile yapılan başka çevre projeleri var mı?', topic: 'misir' },
+    { q: 'Mısır koçanı kullandıktan sonra ne yapılıyor, zararlı hale gelir mi?', topic: 'misir' },
+    { q: 'Mısır koçanının gözenekli yapısı nasıl oluşuyor?', topic: 'misir' },
+    { q: 'Yaş mısır koçanı mı kuru mısır koçanı mı daha iyi çalışır?', topic: 'misir' },
+    { q: 'Mısır koçanı ne kadar metali tutabilir, bir sınırı var mı?', topic: 'misir' },
+    { q: 'Mısır koçanı işlenerek aktif karbona dönüştürülebilir mi?', topic: 'misir' },
+    { q: 'Selüloz neden metal iyonlarını kendine çekiyor?', topic: 'misir' },
+    { q: 'Mısır koçanının yapısı adsorpsiyonu nasıl mümkün kılıyor?', topic: 'misir' },
+    { q: 'Mısır koçanını önceden bir işlemden geçirsek kapasitesi artar mı?', topic: 'misir' },
+    { q: 'Mısır koçanı ne kadar süre suda bekleyebilir, bozulur mu?', topic: 'misir' },
+
+    // ── DENEY VE YÖNTEM ──
+    { q: 'Bu deneyi evde yapmaya çalışsak ne olur?', topic: 'deney' },
+    { q: 'Deneyde neden bu kadar uzun süre beklendi, 1 saat yetmez miydi?', topic: 'deney' },
+    { q: 'Rengin değişmesi neden başarı sayılıyor?', topic: 'deney' },
+    { q: 'Deneyi daha hızlı yapmak için ne yapılabilirdi?', topic: 'deney' },
+    { q: 'Süzgeç kağıdı olmasa deney yine çalışır mıydı?', topic: 'deney' },
+    { q: 'Batch yöntemi ne demek, neden bu yöntem seçildi?', topic: 'deney' },
+    { q: 'Deneyde 0,5 gram neden seçildi, daha fazla koysak daha mı iyi olurdu?', topic: 'deney' },
+    { q: 'Bu deneyin en büyük eksikliği ne?', topic: 'deney' },
+    { q: 'Deneyi daha güvenilir yapmak için ne değiştirilmeli?', topic: 'deney' },
+    { q: 'Sadece renge bakarak ne kadar krom giderildiğini anlayabilir miyiz?', topic: 'deney' },
+    { q: 'Aynı deneyi farklı sıcaklıklarda yapsak sonuç değişir miydi?', topic: 'deney' },
+    { q: 'Konsantrasyon değiştirince ne olur, çok güçlü krom çözeltisinde işe yarar mı?', topic: 'deney' },
+    { q: 'Gerçek fabrika atık suyu ile laboratuvardaki çözelti arasında ne fark var?', topic: 'deney' },
+    { q: 'Deney sonucunu sayısal olarak ölçmek için hangi cihazlar kullanılabilir?', topic: 'deney' },
+    { q: 'Suyun asitliği değiştirilseydi deney farklı sonuç verir miydi?', topic: 'deney' },
+    { q: 'Karıştırma hızı deneyin sonucunu etkiler mi?', topic: 'deney' },
+
+    // ── SU KİRLİLİĞİ VE ÇEVRE ──
+    { q: 'Türkiye\'deki nehirler ne kadar kirli?', topic: 'cevre' },
+    { q: 'Fabrikalar atık sularını neden arıtmak zorunda değil mi?', topic: 'cevre' },
+    { q: 'Su kirliliğinin insanlara en büyük zararı ne?', topic: 'cevre' },
+    { q: 'Kirlenmiş bir nehri tamamen temizlemek mümkün mü?', topic: 'cevre' },
+    { q: 'Bu projenin gerçek hayatta kullanılması mümkün mü?', topic: 'cevre' },
+    { q: 'Deri fabrikaları neden en kirletici sektörler arasında sayılıyor?', topic: 'cevre' },
+    { q: 'Su arıtma tesisleri ağır metalleri neden tam olarak temizleyemiyor?', topic: 'cevre' },
+    { q: 'Bu yöntem gerçek bir atık havuzuna uygulanabilir mi?', topic: 'cevre' },
+    { q: 'Çevre yasaları fabrikalara ne kadar krom atmasına izin veriyor?', topic: 'cevre' },
+    { q: 'Kirlilik zaman içinde kendiliğinden yok olur mu?', topic: 'cevre' },
+    { q: 'Su kirliliği ile iklim değişikliği arasında bağlantı var mı?', topic: 'cevre' },
+    { q: 'Bu yöntem büyük ölçekte uygulanabilir mi?', topic: 'cevre' },
+    { q: 'Krom giderimi için hangi yöntem en ucuz ve en etkili?', topic: 'cevre' },
+    { q: 'Atık suyun içindeki diğer kirleticiler mısır koçanının işleyişini bozar mı?', topic: 'cevre' },
+    { q: 'Dünyada en çok hangi ülkeler su kirliliğinden muzdarip?', topic: 'cevre' },
+
+    // ── SÜRDÜRÜLEBİLİRLİK VE EKONOMİ ──
+    { q: 'Mısır koçanı kullanmak gerçekten ucuz mu, maliyeti ne kadar?', topic: 'ekonomi' },
+    { q: 'Bu yöntem büyük fabrikalara uygulanabilir mi?', topic: 'ekonomi' },
+    { q: 'Tarım atıklarını değerlendirmek neden bu kadar önemli?', topic: 'ekonomi' },
+    { q: 'Klasik arıtma tesisi kurmak ile bu yöntemi kullanmak arasında maliyet farkı ne?', topic: 'ekonomi' },
+    { q: 'Köylerde veya küçük işletmelerde bu yöntem uygulanabilir mi?', topic: 'ekonomi' },
+    { q: 'Mısır koçanı bu amaçla kullanılırsa tarımda fiyatı artar mı?', topic: 'ekonomi' },
+    { q: 'Kullanılmış mısır koçanı tekrar işlenebilir mi, kaç kez kullanılabilir?', topic: 'ekonomi' },
+    { q: 'Bu yöntem bir tarım ülkesi için neden özellikle avantajlı?', topic: 'ekonomi' },
+
+    // ── KARŞILAŞTIRMALI YÖNTEMLER ──
+    { q: 'Su arıtmanın başka yolları neler, hangisi en yaygın?', topic: 'yontemler' },
+    { q: 'Evlerdeki su filtresi bu projeyle benzer mi?', topic: 'yontemler' },
+    { q: 'Kimyasal yöntemle arıtmak neden her zaman yeterli değil?', topic: 'yontemler' },
+    { q: 'Bitki bazlı malzemeler kimyasal malzemelere karşı ne avantaj sağlıyor?', topic: 'yontemler' },
+    { q: 'Ozon ile su arıtma neden her yerde kullanılmıyor?', topic: 'yontemler' },
+    { q: 'Mısır koçanı ile aktif karbon karşılaştırılırsa hangisi daha iyi?', topic: 'yontemler' },
+    { q: 'Birden fazla arıtma yöntemini bir arada kullanmak daha mı iyi sonuç verir?', topic: 'yontemler' },
+    { q: 'Kaynamış su içmek ağır metallerden korunmak için yeterli mi?', topic: 'yontemler' },
+
+    // ── GENEL BİLİM VE ARAŞTIRMA ──
+    { q: 'Bilimsel deney yaparken en önemli kural ne?', topic: 'bilim' },
+    { q: 'Bir deneyin başarılı sayılması için ne gerekiyor?', topic: 'bilim' },
+    { q: 'Gözleme dayalı sonuç ile ölçüme dayalı sonuç arasındaki fark ne?', topic: 'bilim' },
+    { q: 'Kontrol grubu neden bu kadar önemli?', topic: 'bilim' },
+    { q: 'Bir deney başarısız olursa bu bilim için kötü mü?', topic: 'bilim' },
+    { q: 'Sadece renk değişimine bakarak kesin sonuç çıkarabilir miyiz?', topic: 'bilim' },
+    { q: 'Aynı deneyi farklı gruplar yapsa hep aynı sonucu bulabilir mi?', topic: 'bilim' },
+    { q: 'Bu deneyin sonuçlarını daha güvenilir hale getirmek için ne yapılmalı?', topic: 'bilim' }
+  ];
+
+  // Konu eşleştirme: hangi anahtar kelimeler hangi konuya işaret eder
+  var KONU_ESLESTIRME = {
+    'krom':        ['krom', 'metal', 'toksik', 'zehir', 'turuncu', 'cr', 'dikromat', 'ağır'],
+    'adsorpsiyon': ['adsorpsiyon', 'tutun', 'yapış', 'yüzey', 'gözenek', 'filtre', 'aktif karbon', 'bağla'],
+    'misir':       ['mısır', 'koçan', 'selüloz', 'bitki', 'tarım', 'biyo', 'doğal', 'atık'],
+    'deney':       ['deney', 'batch', 'süre', 'saat', 'beklet', 'karıştır', 'ölç', 'renk', 'süzgeç', 'konsantrasyon', 'yöntem', 'laboratuvar'],
+    'cevre':       ['çevre', 'su', 'nehir', 'fabrika', 'kirlilik', 'arıtma', 'temizle', 'doğa', 'ekosistem'],
+    'proje':       ['proje', 'tübitak', 'araştırma', 'öğrenci', 'sonuç', 'bulgu'],
+    'ekonomi':     ['maliyet', 'ucuz', 'para', 'ekonomi', 'sürdür', 'yatırım', 'değer'],
+    'yontemler':   ['yöntem', 'karşılaştır', 'iyon', 'membran', 'ozon', 'kimyasal', 'alternatif'],
+    'bilim':       ['bilim', 'deney', 'ölçüm', 'gözlem', 'hata', 'kontrol', 'tekrar', 'sonuç']
+  };
+
+  // Metinden konu tespit et
+  function konuTespit(metin){
+    if(!metin) return null;
+    var m = metin.toLowerCase();
+    var enIyi = null, enIyiSkor = 0;
+    Object.keys(KONU_ESLESTIRME).forEach(function(konu){
+      var skor = 0;
+      KONU_ESLESTIRME[konu].forEach(function(k){ if(m.indexOf(k) > -1) skor++; });
+      if(skor > enIyiSkor){ enIyiSkor = skor; enIyi = konu; }
+    });
+    return enIyiSkor > 0 ? enIyi : null;
+  }
+
+  // Soru bankasından 3 soru seç
+  // Önce seçilen konudan, yoksa herhangi bir konudan
+  function sorularSec(tercihKonu){
+    var secilen = [];
+
+    // Önce tercih edilen konudan dene
+    var havuz = SORU_BANKASI.filter(function(s){
+      return !askedQuestions.has(s.q) && (tercihKonu ? s.topic === tercihKonu : true);
+    });
+
+    // O konuda yeterli soru kalmadıysa tüm bankayı kullan
+    if(havuz.length < 3){
+      havuz = SORU_BANKASI.filter(function(s){ return !askedQuestions.has(s.q); });
+    }
+
+    // Hepsi bittiyse sıfırla ve yeniden başla
+    if(havuz.length < 3){
+      SORU_BANKASI.forEach(function(s){ askedQuestions.delete(s.q); });
+      saveHistory();
+      havuz = SORU_BANKASI.slice();
+    }
+
+    // Rastgele 3 tane seç
+    var kopya = havuz.slice();
+    while(secilen.length < 3 && kopya.length > 0){
+      var idx = Math.floor(Math.random() * kopya.length);
+      secilen.push(kopya[idx].q);
+      kopya.splice(idx, 1);
+    }
+
+    return secilen;
+  }
+
+  var sonKonu = null; // Son sorulan/cevaplanan konuyu takip et
+
+  function loadInitialQuestions(){
+    var sorular = sorularSec(null);
+    renderSuggestedQuestions(sorular);
+  }
+
+  function renderSuggestedQuestions(questions){
+    sqList.innerHTML = '';
+    questions.forEach(function(q){
+      var btn = document.createElement('button');
+      btn.className = 'suggested-q';
+      btn.innerHTML = '<i class="suggested-q-icon">↗</i>' + q;
+      btn.addEventListener('click', function(){
+        input.value = q;
+        sendMessage();
+      });
+      sqList.appendChild(btn);
+    });
+    saveSuggestedQuestions(questions);
+  }
+
+  function setSQLoading(loading){
+    if(loading){
+      sqWrap.classList.add('loading');
+      sqSpinner.style.display = 'block';
+    } else {
+      sqWrap.classList.remove('loading');
+      sqSpinner.style.display = 'none';
+    }
+  }
+
+  function guncelleSorular(soruMetni, cevapMetni){
+    // Soru ve cevaptan konu tespit et
+    var konu = konuTespit(soruMetni) || konuTespit(cevapMetni) || sonKonu;
+    sonKonu = konu;
+    var sorular = sorularSec(konu);
+    renderSuggestedQuestions(sorular);
+  }
+
+  /* ── MESAJ GÖNDERME ── */
   async function sendMessage(){
     var text = input.value.trim();
     if(!text) return;
+
+    // Soruyu "sorulmuşlar" listesine ekle
+    askedQuestions.add(text);
+
     input.value = '';
     input.style.height = 'auto';
     sendBtn.disabled = true;
+
+    // Önerilen soruları sıfırla (yüklenirken görünsün)
+    setSQLoading(true);
+    sqList.innerHTML = '';
+
     addMsg('user', text);
+    saveMessages();
     var thinking = addThinking();
 
     try {
@@ -717,61 +1091,72 @@ body {
 
       if(data.error){
         addMsg('ai','Hata: ' + data.error);
+        setSQLoading(false);
+        guncelleSorular(text, '');
         return;
       }
 
       history.push({ role: 'user', content: text });
       history.push({ role: 'assistant', content: data.reply });
       addMsg('ai', data.reply);
+      saveHistory();
+      saveMessages();
+
+      // Cevap geldikten sonra konuya uygun sorular seç
+      setSQLoading(false);
+      guncelleSorular(text, data.reply);
 
     } catch(err){
       thinking.remove();
       addMsg('ai','Bağlantı hatası. Lütfen tekrar dene.');
+      setSQLoading(false);
+      guncelleSorular(text, '');
     } finally {
       sendBtn.disabled = false;
     }
   }
 
-  // Mikrofon
-var micBtn = document.getElementById('ai-mic');
-var recognition = null;
+  /* ── MİKROFON ── */
+  var micBtn = document.getElementById('ai-mic');
+  var recognition = null;
 
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = 'tr-TR';
-  recognition.continuous = false;
-  recognition.interimResults = false;
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'tr-TR';
+    recognition.continuous = false;
+    recognition.interimResults = false;
 
-  recognition.onresult = function(e) {
-    var transcript = e.results[0][0].transcript;
-    input.value = transcript;
-    input.style.height = 'auto';
-    input.style.height = Math.min(input.scrollHeight, 80) + 'px';
-    micBtn.classList.remove('listening');
-  };
-
-  recognition.onend = function() {
-    micBtn.classList.remove('listening');
-  };
-
-  recognition.onerror = function() {
-    micBtn.classList.remove('listening');
-    addMsg('ai', 'Mikrofon erişimi sağlanamadı. Lütfen tarayıcı izinlerini kontrol et.');
-  };
-
-  micBtn.addEventListener('click', function() {
-    if (micBtn.classList.contains('listening')) {
-      recognition.stop();
+    recognition.onresult = function(e) {
+      var transcript = e.results[0][0].transcript;
+      input.value = transcript;
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 80) + 'px';
       micBtn.classList.remove('listening');
-    } else {
-      recognition.start();
-      micBtn.classList.add('listening');
-    }
-  });
-} else {
-  micBtn.style.display = 'none'; // Desteklenmeyen tarayıcılarda gizle
-}
+    };
+
+    recognition.onend = function() {
+      micBtn.classList.remove('listening');
+    };
+
+    recognition.onerror = function() {
+      micBtn.classList.remove('listening');
+      addMsg('ai', 'Mikrofon erişimi sağlanamadı. Lütfen tarayıcı izinlerini kontrol et.');
+    };
+
+    micBtn.addEventListener('click', function() {
+      if (micBtn.classList.contains('listening')) {
+        recognition.stop();
+        micBtn.classList.remove('listening');
+      } else {
+        recognition.start();
+        micBtn.classList.add('listening');
+      }
+    });
+  } else {
+    micBtn.style.display = 'none';
+  }
+
   sendBtn.addEventListener('click', sendMessage);
   input.addEventListener('keydown', function(e){
     if(e.key === 'Enter' && !e.shiftKey){
